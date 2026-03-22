@@ -4,33 +4,75 @@ const bcrypt = require('bcryptjs');
 const advocateSchema = new mongoose.Schema({
   fullName: { 
     type: String, 
-    required: [true, 'Please add a full name'] 
+    required: [true, 'Please add a full name'],
+    trim: true
   },
   barId: { 
     type: String, 
     required: [true, 'Bar Association ID is required'], 
-    unique: true 
+    unique: true,
+    trim: true
   },
   email: { 
     type: String, 
     required: [true, 'Please add an email'], 
     unique: true,
+    lowercase: true,
     match: [/.+\@.+\..+/, 'Please fill a valid email address']
   },
   password: { 
     type: String, 
     required: [true, 'Please add a password'],
     minlength: 6,
-    select: false // Don't return password by default in queries
+    select: false 
   },
+  
+  // --- NEW LOCATION FIELDS ---
+  city: { 
+    type: String, 
+    required: [true, 'City is required for client discovery'],
+    index: true // Makes searching by city much faster
+  },
+  area: { 
+    type: String, 
+    required: [true, 'Specific area or locality is required'],
+    trim: true
+  },
+  
+  // --- PROFESSIONAL DETAILS ---
+  specialization: { 
+    type: String, 
+    required: [true, 'Please specify your primary area of practice'],
+    enum: ['Criminal', 'Civil', 'Corporate', 'Family', 'Tax', 'Intellectual Property', 'Other'],
+    index: true 
+  },
+  experienceYears: {
+    type: Number,
+    default: 0
+  },
+  bio: {
+    type: String,
+    maxlength: [500, 'Bio cannot be more than 500 characters']
+  },
+  profileImage: {
+    type: String,
+    default: 'https://i.imgur.com/8Km9tLL.png' // Default placeholder
+  },
+
   role: { 
     type: String, 
     default: 'advocate' 
+  },
+  isActive: {
+    type: Boolean,
+    default: true
   },
   createdAt: { 
     type: Date, 
     default: Date.now 
   }
+}, {
+  timestamps: true // Automatically adds updatedAt and createdAt
 });
 
 // Encryption hook
