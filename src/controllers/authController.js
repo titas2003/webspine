@@ -1,4 +1,4 @@
-const Advocate = require('../models/Advocates'); // Updated import
+const Advocate = require('../models/Advocates');
 const jwt = require('jsonwebtoken');
 
 const generateToken = (id) => {
@@ -7,12 +7,32 @@ const generateToken = (id) => {
 
 exports.register = async (req, res) => {
   try {
-    const { fullName, barId, email, password } = req.body;
+    // 1. Extract ALL fields from the frontend request
+    const { 
+      fullName, 
+      barId, 
+      email, 
+      password, 
+      city, 
+      area, 
+      specialization, 
+      experienceYears 
+    } = req.body;
     
     const advocateExists = await Advocate.findOne({ email });
     if (advocateExists) return res.status(400).json({ message: 'Advocate already registered' });
 
-    const advocate = await Advocate.create({ fullName, barId, email, password });
+    // 2. Pass the full object to the model
+    const advocate = await Advocate.create({ 
+      fullName, 
+      barId, 
+      email, 
+      password,
+      city,
+      area,
+      specialization,
+      experienceYears
+    });
 
     res.status(201).json({
       success: true,
@@ -20,11 +40,14 @@ exports.register = async (req, res) => {
       user: {
         id: advocate._id,
         fullName: advocate.fullName,
-        email: advocate.email
+        email: advocate.email,
+        city: advocate.city,
+        specialization: advocate.specialization
       }
     });
   } catch (error) {
-    res.status(500).json({ success: false, message: error.message });
+    // Catch validation errors specifically
+    res.status(400).json({ success: false, message: error.message });
   }
 };
 
