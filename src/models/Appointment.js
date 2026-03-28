@@ -3,7 +3,7 @@ const mongoose = require('mongoose');
 const appointmentSchema = new mongoose.Schema({
   advocateId: {
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Advocate',
+    ref: 'Advocates', // Matches your model name
     required: true
   },
   clientName: {
@@ -11,7 +11,7 @@ const appointmentSchema = new mongoose.Schema({
     required: [true, 'Client name is required']
   },
   caseType: {
-    type: String, // e.g., "Civil", "Criminal", "Consultation"
+    type: String,
     required: true
   },
   date: {
@@ -19,13 +19,14 @@ const appointmentSchema = new mongoose.Schema({
     required: true
   },
   time: {
-    type: String, // e.g., "10:30 AM"
+    type: String, 
     required: true
   },
   status: {
     type: String,
-    enum: ['Scheduled', 'Completed', 'Cancelled'],
-    default: 'Scheduled'
+    // Expanded to cover all 8 requirements
+    enum: ['Pending', 'Accepted', 'Rejected', 'Completed', 'Cancelled_By_Client', 'Cancelled_By_Advocate'],
+    default: 'Pending'
   },
   meetingLink: {
     type: String,
