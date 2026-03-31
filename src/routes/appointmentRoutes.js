@@ -3,7 +3,8 @@ const router = express.Router();
 const { 
   getAppointments, 
   createAppointmentRequest, 
-  updateAppointmentStatus 
+  updateAppointmentStatus,
+  getSyncedCalendar
 } = require('../controllers/appointmentController');
 const { protect } = require('../middleware/authMiddleware');
 
@@ -18,5 +19,7 @@ router.route('/')
 
 router.route('/:id/status')
   .patch(updateAppointmentStatus); // Handles Requirement #3 (Accept/Reject)
+
+router.get('/sync/:date', protect, getSyncedCalendar);
 
 module.exports = router;

@@ -1,4 +1,5 @@
 const Appointment = require('../models/Appointment');
+const Availability = require('../models/Availability');
 
 // @desc    Get appointments for the logged-in advocate (with optional status filter)
 // @route   GET /api/appointments
@@ -62,5 +63,39 @@ exports.updateAppointmentStatus = async (req, res) => {
     res.status(200).json({ success: true, data: appointment });
   } catch (error) {
     res.status(400).json({ success: false, message: error.message });
+  }
+};
+
+exports.getSyncedCalendar = async (req, res) => {
+  try {
+    const { date } = req.params; // Format: YYYY-MM-DD
+    const advocateId = req.advocate.id;
+
+    // 1. Fetch all "Set" availability for this advocate
+    const availability = await Availability.findOne({ advocateId });
+    
+    // 2. Fetch all "Accepted" appointments for this specific date
+    const startOfDay = new Date(date);
+    startOfDay.setHours(0, 0, 0, 0);
+    const endOfDay = new Date(date);
+    endOfDay.setHours(23, 59, 59, 999);
+
+    const bookings = await Appointment.find({
+      advocateId,
+      status: 'Accepted',
+      date: { $gte: startOfDay, $lte: endOfDay }
+    });
+
+    // 3. Logic: Mark slots as "Booked" if they exist in the Appointment collection
+    const bookedTimes = bookings.map(b => b.time); // e.g. ["10:00 AM", "02:00 PM"]
+
+    res.status(200).json({
+      success: true,
+      date,
+      bookedTimes,
+      allAvailableSlots: availability ? availability.slots : []
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
   }
 };
