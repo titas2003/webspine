@@ -7,6 +7,7 @@ const appointmentRoutes = require('./routes/appointmentRoutes');
 const advocateRoutes = require('./routes/advocateRoutes');
 const availabilityRoutes = require('./routes/availabilityRoutes');
 const dashboardRoutes = require('./routes/dashboardRoutes');
+const userRoutes = require('./routes/userRoutes');
 
 dotenv.config();
 connectDB();
@@ -30,7 +31,8 @@ app.use('/api/appointments', appointmentRoutes);
 app.use('/api/auth', authRoutes);
 app.use('/api/advocates', advocateRoutes); 
 app.use('/api/availability', availabilityRoutes); 
-app.use('/api/dashboard', dashboardRoutes); // New route path
+app.use('/api/dashboard', dashboardRoutes);
+app.use('/api/user', userRoutes); // New route path
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
