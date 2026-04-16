@@ -1,5 +1,5 @@
-const Advocate = require('../models/Advocates');
-const Availability = require('../models/Availability'); // 1. Import the Availability model
+const Advocate = require('../../models/Advocates');
+const Availability = require('../../models/Availability'); // 1. Import the Availability model
 
 // @desc    Search advocates by city and area (Public)
 // @route   GET /api/advocates/search

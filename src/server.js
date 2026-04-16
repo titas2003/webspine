@@ -2,12 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
-const authRoutes = require('./routes/authRoutes');
-const appointmentRoutes = require('./routes/appointmentRoutes');
 const advocateRoutes = require('./routes/advocateRoutes');
 const availabilityRoutes = require('./routes/availabilityRoutes');
-const dashboardRoutes = require('./routes/dashboardRoutes');
-const userRoutes = require('./routes/userRoutes');
+const userRoutes = require('./routes/clientRoutes');
 
 dotenv.config();
 connectDB();
@@ -27,12 +24,8 @@ app.get('/test', (req, res) => {
   res.send('🔥 Backend reachable');
 });
 
-app.use('/api/auth', authRoutes);
-app.use('/api/appointments', appointmentRoutes);
-app.use('/api/auth', authRoutes);
 app.use('/api/advocates', advocateRoutes); 
 app.use('/api/availability', availabilityRoutes); 
-app.use('/api/dashboard', dashboardRoutes);
 app.use('/api/user', userRoutes); // New route path
 
 const PORT = process.env.PORT || 5000;

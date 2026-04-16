@@ -1,14 +1,15 @@
 const jwt = require('jsonwebtoken');
 const User = require('../models/User');
+const Blacklist = require('../models/Blacklist'); // Import the Blacklist model
 
 /**
  * @desc    Middleware to protect routes for Clients
- * Checks for Bearer token and attaches client user to req.user
+ * Checks for Bearer token, Blacklist status, and attaches client to req.user
  */
 exports.protectClient = async (req, res, next) => {
   let token;
 
-  // Check for token in headers
+  // 1. Extract Token
   if (
     req.headers.authorization &&
     req.headers.authorization.startsWith('Bearer')
@@ -19,29 +20,39 @@ exports.protectClient = async (req, res, next) => {
   if (!token) {
     return res.status(401).json({ 
       success: false, 
-      message: 'Not authorized to access this route, no token provided' 
+      message: 'Access Denied: No token provided' 
     });
   }
 
   try {
-    // Verify token
+    // 2. Check if token is Blacklisted (Logged out)
+    const isBlacklisted = await Blacklist.findOne({ token });
+    if (isBlacklisted) {
+      return res.status(401).json({ 
+        success: false, 
+        message: 'Session ended. Please login again.' 
+      });
+    }
+
+    // 3. Verify Token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // Attach the client from the "Clients" collection to the request object
-    req.user = await User.findById(decoded.id);
+    // 4. Find User & Exclude Password
+    req.user = await User.findById(decoded.id).select('-password');
 
     if (!req.user) {
       return res.status(401).json({ 
         success: false, 
-        message: 'User no longer exists' 
+        message: 'Account not found or session expired' 
       });
     }
 
     next();
   } catch (err) {
+    const message = err.name === 'TokenExpiredError' ? 'Session expired, please login again' : 'Invalid token';
     return res.status(401).json({ 
       success: false, 
-      message: 'Token verification failed' 
+      message 
     });
   }
 };

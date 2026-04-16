@@ -1,4 +1,4 @@
-const Availability = require('../models/Availability');
+const Availability = require('../../models/Availability');
 
 exports.setAvailability = async (req, res) => {
   try {

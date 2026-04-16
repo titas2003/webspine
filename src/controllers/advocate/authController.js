@@ -1,4 +1,4 @@
-const Advocate = require('../models/Advocates');
+const Advocate = require('../../models/Advocates');
 const jwt = require('jsonwebtoken');
 
 const generateToken = (id) => {
