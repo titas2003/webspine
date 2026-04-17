@@ -9,7 +9,9 @@ const {
   getProfile, 
   updateProfile, 
   updateLocation, 
-  getVerificationStatus 
+  getVerificationStatus,
+  updateEmail,
+  updatePhone
 } = require('../controllers/client/userAuthController'); 
 
 // Import your new middleware
@@ -27,5 +29,7 @@ router.get('/profile', getProfile); // This is your "me" route
 router.put('/profile', updateProfile);
 router.patch('/location', updateLocation);
 router.get('/v-status', getVerificationStatus);
+router.patch('/update-email', updateEmail);
+router.patch('/update-phone', updatePhone);
 
 module.exports = router;

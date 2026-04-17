@@ -229,3 +229,85 @@ exports.logout = async (req, res) => {
     res.status(500).json({ success: false, message: error.message });
   }
 };
+
+// ---------------------------------------------------------
+// @desc    Update Client Email & Invalidate Session
+// @route   PATCH /api/client/update-email
+// ---------------------------------------------------------
+exports.updateEmail = async (req, res) => {
+  try {
+    const { email } = req.body;
+    // Extract the token to blacklist it
+    const token = req.headers.authorization.split(' ')[1];
+
+    if (!email) {
+      return res.status(400).json({ success: false, message: 'Please provide a new email' });
+    }
+
+    const cleanEmail = email.toLowerCase().trim();
+
+    // 1. Check if email is already in use
+    const emailExists = await User.findOne({ email: cleanEmail });
+    if (emailExists) {
+      return res.status(400).json({ success: false, message: 'Email is already registered to another account' });
+    }
+
+    // 2. Update the email
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { email: cleanEmail },
+      { new: true, runValidators: true }
+    );
+
+    // 3. SECURITY: Blacklist the token so the user must re-login with the new email
+    await Blacklist.create({ token });
+
+    res.status(200).json({
+      success: true,
+      message: 'Email updated successfully. Please login again with your new email.'
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ---------------------------------------------------------
+// @desc    Update Client Phone & Invalidate Session
+// @route   PATCH /api/client/update-phone
+// ---------------------------------------------------------
+exports.updatePhone = async (req, res) => {
+  try {
+    const { phone } = req.body;
+    // Extract the token to blacklist it
+    const token = req.headers.authorization.split(' ')[1];
+
+    if (!phone) {
+      return res.status(400).json({ success: false, message: 'Please provide a new phone number' });
+    }
+
+    const cleanPhone = phone.trim();
+
+    // 1. Check if phone is already in use
+    const phoneExists = await User.findOne({ phone: cleanPhone });
+    if (phoneExists) {
+      return res.status(400).json({ success: false, message: 'Phone number is already registered to another account' });
+    }
+
+    // 2. Update the phone
+    await User.findByIdAndUpdate(
+      req.user.id,
+      { phone: cleanPhone },
+      { new: true, runValidators: true }
+    );
+
+    // 3. SECURITY: Blacklist the token so the user must re-login with the new phone
+    await Blacklist.create({ token });
+
+    res.status(200).json({
+      success: true,
+      message: 'Phone number updated successfully. Please login again with your new phone number.'
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
