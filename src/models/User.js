@@ -17,7 +17,7 @@ const userSchema = new mongoose.Schema({
   phone: {
     type: String,
     required: [true, 'Phone number is required'],
-    unique: true,
+    unique: true, // Added unique constraint back to ensure data integrity
     trim: true
   },
   email: {
@@ -49,7 +49,6 @@ const userSchema = new mongoose.Schema({
     minlength: 6,
     select: false 
   },
-  // New Fields
   location: {
     latitude: { type: Number },
     longitude: { type: Number },
@@ -57,12 +56,30 @@ const userSchema = new mongoose.Schema({
   },
   photo: {
     type: String,
-    default: null // Will store the URL from your storage bucket
+    default: null 
   },
   vStatus: {
     type: String,
     enum: ['Pending', 'Verified', 'Rejected'],
     default: 'Pending'
+  },
+  /**
+   * New Verification Assets
+   * Stores URLs to Cloudinary, S3, or local storage paths
+   */
+  verificationDocs: {
+    aadharImage: { 
+      type: String, 
+      default: null 
+    },
+    panImage: { 
+      type: String, 
+      default: null 
+    },
+    videoUrl: { 
+      type: String, 
+      default: null 
+    }
   }
 }, { 
   timestamps: true,
