@@ -2,7 +2,7 @@ const express = require('express');
 const router = express.Router();
 
 // 1. Import Multer Utility
-const upload = require('../utils/multerConfig');
+const upload = require('../utils/clientMulterConfig');
 
 // 2. Import Controllers
 // Authentication & Account
