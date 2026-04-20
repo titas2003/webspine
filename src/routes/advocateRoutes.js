@@ -1,17 +1,24 @@
 const express = require('express');
 const router = express.Router();
-const { searchAdvocates, getMe } = require('../controllers/advocate/advocateController');
-const { register, login, logout } = require('../controllers/advocate/authController');
-const { protect } = require('../middleware/authMiddleware');
 
-router.post('/logout', logout);
-router.post('/register', register);
+const {
+  signUp,
+  login
+} = require('../controllers/advocate/AdvAuthController');
+
+// Import the new Advocate Middleware
+const { protectAdvocate } = require('../middleware/advocateAuthMiddleware');
+
+// --- PUBLIC ROUTES ---
+router.post('/signup', signUp);
 router.post('/login', login);
 
-// Public route: Clients need to search without logging in
-router.get('/search', searchAdvocates);
+// --- PROTECTED ROUTES ---
+router.use(protectAdvocate); 
 
-// Private route: Only logged-in advocates can see their own full profile
-router.get('/me', protect, getMe);
+// Example protected route
+router.get('/profile', (req, res) => {
+  res.status(200).json({ success: true, data: req.user });
+});
 
 module.exports = router;

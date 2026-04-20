@@ -3,7 +3,6 @@ const cors = require('cors');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const advocateRoutes = require('./routes/advocateRoutes');
-const availabilityRoutes = require('./routes/availabilityRoutes');
 const userRoutes = require('./routes/clientRoutes');
 const path = require('path');
 
@@ -24,10 +23,10 @@ app.use(express.urlencoded({ extended: false }));
 app.get('/test', (req, res) => {
   res.send('🔥 Backend reachable');
 });
-app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
-app.use('/api/advocates', advocateRoutes); 
-app.use('/api/availability', availabilityRoutes); 
-app.use('/api/user', userRoutes); // New route path
+app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
+app.use('/api/user', userRoutes); 
+
+app.use('/api/advocate', advocateRoutes); // New route path
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
