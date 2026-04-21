@@ -1,5 +1,6 @@
 const Advocate = require('../../models/Advocates');
 const AdvocateCounter = require('../../models/AdvocateCounter');
+const Blacklist = require('../../models/Blacklist');
 const jwt = require('jsonwebtoken');
 
 /**
@@ -123,9 +124,8 @@ exports.login = async (req, res) => {
         { advId: identifier.toUpperCase() }
       ]
     }).select('+password');
-    console.log('Found Advocate for Login:', advocate); // Debug log
     if (advocate && (await advocate.matchPassword(password))) {
-      const token = jwt.sign({ id: advocate.advId }, process.env.JWT_SECRET, { expiresIn: '30d' });
+      const token = jwt.sign({ id: advocate._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
       res.status(200).json({
         success: true,
@@ -142,6 +142,28 @@ exports.login = async (req, res) => {
     res.status(500).json({
       success: false,
       message: error.message || 'Internal Server Error'
+    });
+  }
+};
+
+exports.logout = async (req, res) => {
+  console.log('Logout request received');
+  try {
+    // 1. Get the token from the headers
+    const token = req.headers.authorization.split(' ')[1];
+    console.log('Token to blacklist:', token); // Debug log
+    // 2. Add to Blacklist
+
+    await Blacklist.create({ token });
+    res.status(200).json({
+      success: true,
+      message: 'Logged out successfully'
+    });
+  } catch (error) {
+    res.status(500).json({
+      success: false,
+      message: 'Logout failed',
+      error: error.message
     });
   }
 };

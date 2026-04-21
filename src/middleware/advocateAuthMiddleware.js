@@ -17,19 +17,20 @@ exports.protectAdvocate = async (req, res, next) => {
   }
 
   if (!token) {
-    return res.status(401).json({ 
-      success: false, 
-      message: 'Access Denied: No token provided' 
+    return res.status(401).json({
+      success: false,
+      message: 'Access Denied: No token provided'
     });
   }
+  console.log('Token received for authentication:', token); // Debug log
 
   try {
     // 2. Check Blacklist (Logged out tokens)
     const isBlacklisted = await Blacklist.findOne({ token });
     if (isBlacklisted) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Session ended. Please login again.' 
+      return res.status(401).json({
+        success: false,
+        message: 'Session ended. Please login again.'
       });
     }
 
@@ -41,18 +42,19 @@ exports.protectAdvocate = async (req, res, next) => {
     req.user = await Advocate.findById(decoded.id).select('-password');
 
     if (!req.user) {
-      return res.status(401).json({ 
-        success: false, 
-        message: 'Advocate account not found' 
+      return res.status(401).json({
+        success: false,
+        message: 'Advocate account not found'
       });
     }
 
     next();
   } catch (err) {
+    console.error("JWT Verification Error:", err.message); // Add this line
     const message = err.name === 'TokenExpiredError' ? 'Session expired' : 'Invalid token';
-    return res.status(401).json({ 
-      success: false, 
-      message 
+    return res.status(401).json({
+      success: false,
+      message
     });
   }
 };
