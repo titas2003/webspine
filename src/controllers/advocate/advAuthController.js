@@ -167,3 +167,33 @@ exports.logout = async (req, res) => {
     });
   }
 };
+
+/**
+ * @desc    Get Advocate Profile
+ * @route   GET /api/advocate/profile
+ * @access  Protected
+ */
+exports.getProfile = async (req, res) => {
+  try {
+    const advocate = await Advocate.findById(req.user.id);
+
+    if (!advocate) {
+      return res.status(404).json({ success: false, message: 'Advocate not found' });
+    }
+
+    res.status(200).json({
+      success: true,
+      data: {
+        advId: advocate.advId,
+        name: advocate.name,
+        email: advocate.email,
+        phone: advocate.phone,
+        state: advocate.state,
+        vStatus: advocate.vStatus,
+        createdAt: advocate.createdAt
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message || 'Internal Server Error' });
+  }
+};

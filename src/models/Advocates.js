@@ -8,8 +8,51 @@ const advocateSchema = new mongoose.Schema({
   phone: { type: String, required: true, unique: true },
   state: { type: String, required: true, uppercase: true },
   password: { type: String, required: true, minlength: 6, select: false },
-  vStatus: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' }
-}, { timestamps: true });
+  vStatus: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' },
+
+  /**
+   * Government Identity Numbers
+   */
+  panNumber: {
+    type: String,
+    unique: true,
+    sparse: true,
+    uppercase: true,
+    trim: true,
+    match: [/^[A-Z]{5}[0-9]{4}[A-Z]{1}$/, 'Invalid PAN format']
+  },
+  aadharNumber: {
+    type: String,
+    unique: true,
+    sparse: true,
+    trim: true,
+    match: [/^[0-9]{12}$/, 'Invalid Aadhar format (must be 12 digits)']
+  },
+  enrollmentNumber: {
+    type: String,
+    unique: true,
+    sparse: true,
+    trim: true
+  },
+  barId: {
+    type: String,
+    unique: true,
+    sparse: true,
+    trim: true
+  },
+
+  /**
+   * Verification Document File Paths
+   * Stores paths relative to uploads/advocates/{advId}/
+   */
+  photo: { type: String, default: null },
+  verificationDocs: {
+    panImage: { type: String, default: null },
+    aadharImage: { type: String, default: null },
+    enrollmentCertificate: { type: String, default: null },
+    videoUrl: { type: String, default: null }
+  }
+}, { timestamps: true, collection: 'Advocates' });
 
 // Hash password before saving - REMOVED 'next'
 advocateSchema.pre('save', async function() {
