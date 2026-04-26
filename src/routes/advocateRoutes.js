@@ -5,14 +5,15 @@ const {
   signUp,
   login,
   logout
-} = require('../controllers/advocate/AdvAuthController');
+} = require('../controllers/advocate/advAuthController');
 
 // Import the new Advocate Middleware
 const { protectAdvocate } = require('../middleware/advocateAuthMiddleware');
+const { authLimiter } = require('../middleware/rateLimiter');
 
 // --- PUBLIC ROUTES ---
-router.post('/signup', signUp);
-router.post('/login', login);
+router.post('/signup', authLimiter, signUp);
+router.post('/login', authLimiter, login);
 
 // --- PROTECTED ROUTES ---
 router.use(protectAdvocate); 

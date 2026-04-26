@@ -28,10 +28,11 @@ const {
 
 // 3. Import Middleware
 const { protectClient } = require('../middleware/clientAuthMiddleware');
+const { authLimiter } = require('../middleware/rateLimiter');
 
 // --- PUBLIC ROUTES ---
-router.post('/signup', signUp);
-router.post('/login', login);
+router.post('/signup', authLimiter, signUp);
+router.post('/login', authLimiter, login);
 
 // --- PROTECTED ROUTES (Requires Login) ---
 router.use(protectClient); 

@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const helmet = require('helmet');
 const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const advocateRoutes = require('./routes/advocateRoutes');
@@ -10,6 +11,10 @@ dotenv.config();
 connectDB();
 
 const app = express();
+
+// Secure HTTP Headers
+app.use(helmet());
+app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" })); // Allow serving images from /uploads to frontend
 
 app.use(cors({
   origin: 'http://localhost:3000',
