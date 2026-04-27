@@ -30,6 +30,16 @@ const {
 const { protectClient } = require('../middleware/clientAuthMiddleware');
 const { authLimiter } = require('../middleware/rateLimiter');
 
+// 4. Import Appointment Controller
+const {
+  getAdvocateSlots,
+  requestBooking,
+  getBookingStatus,
+  listUpcomingBookings,
+  listPastAppointments,
+  cancelBooking
+} = require('../controllers/client/clientAppointmentController');
+
 // --- PUBLIC ROUTES ---
 router.post('/signup', authLimiter, signUp);
 router.post('/login', authLimiter, login);
@@ -55,5 +65,16 @@ router.patch('/verify/aadhar', upload.single('aadharImage'), uploadAadhar);
 router.patch('/verify/pan', upload.single('panImage'), uploadPan);
 router.patch('/verify/photo', upload.single('photo'), uploadPhoto);
 router.patch('/verify/video', upload.single('video'), uploadVideo);
+
+// =============================================================================
+// APPOINTMENT ROUTES
+// =============================================================================
+// Note: specific sub-paths (upcoming/past) MUST come before /:id to avoid conflicts
+router.get('/advocates/:advId/slots',      getAdvocateSlots);      // Browse advocate's free slots
+router.post('/appointments',               requestBooking);         // Book a slot
+router.get('/appointments/upcoming',       listUpcomingBookings);   // My upcoming bookings
+router.get('/appointments/past',           listPastAppointments);   // My past appointments
+router.get('/appointments/:id',            getBookingStatus);       // Single booking status
+router.patch('/appointments/:id/cancel',   cancelBooking);          // Cancel a booking
 
 module.exports = router;
