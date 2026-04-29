@@ -2,6 +2,7 @@ const Advocate = require('../../models/Advocates');
 const AdvocateCounter = require('../../models/AdvocateCounter');
 const Blacklist = require('../../models/Blacklist');
 const jwt = require('jsonwebtoken');
+const { sendWelcomeMail } = require('../../utils/mailer');
 
 /**
  * HELPER: Generate Unique 7-Digit AdvID
@@ -86,7 +87,9 @@ exports.signUp = async (req, res) => {
     }
     // Generate Token
     const token = jwt.sign({ id: advocate._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
-    console.log('Generated JWT Token:', token); // Debug log
+
+    // Fire-and-forget welcome email
+    sendWelcomeMail(advocate.email, advocate.name, 'advocate', advocate.advId);
 
     res.status(201).json({
       success: true,

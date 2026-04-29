@@ -1,6 +1,7 @@
 const AvailabilitySlot = require('../../models/AvailabilitySlot');
 const Appointment = require('../../models/Appointment');
-const { v4: uuidv4 } = require('crypto');
+const User = require('../../models/User');
+const { sendBookingResponseMail, sendMeetingScheduledMail } = require('../../utils/mailer');
 
 // ---------------------------------------------------------------------------
 // HELPER: Generate a UUID-like group ID for recurring slots
@@ -212,6 +213,18 @@ exports.respondToBooking = async (req, res) => {
 
     await appointment.save();
 
+    // Notify client of advocate's decision
+    const slot = await AvailabilitySlot.findById(appointment.slotId).select('date startTime endTime');
+    const client = await User.findById(appointment.clientId).select('name email');
+    if (client && slot) {
+      sendBookingResponseMail(
+        client.email, client.name,
+        action === 'accept' ? 'accepted' : 'rejected',
+        slot.date, slot.startTime, slot.endTime,
+        rejectionReason || null
+      );
+    }
+
     res.status(200).json({
       success: true,
       message: `Appointment ${action}ed successfully`,
@@ -252,6 +265,17 @@ exports.scheduleMeeting = async (req, res) => {
     appointment.meetingLink = meetingLink || null;
     appointment.meetingAddress = meetingAddress || null;
     await appointment.save();
+
+    // Notify client of meeting details
+    const slot = await AvailabilitySlot.findById(appointment.slotId).select('date startTime endTime');
+    const client = await User.findById(appointment.clientId).select('name email');
+    if (client && slot) {
+      sendMeetingScheduledMail(
+        client.email, client.name,
+        meetingType, slot.date, slot.startTime, slot.endTime,
+        meetingLink || null, meetingAddress || null
+      );
+    }
 
     res.status(200).json({ success: true, message: 'Meeting details saved', data: appointment });
   } catch (error) {

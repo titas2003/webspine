@@ -1,6 +1,7 @@
 const AvailabilitySlot = require('../../models/AvailabilitySlot');
 const Appointment = require('../../models/Appointment');
 const Advocate = require('../../models/Advocates');
+const { sendBookingConfirmationMail, sendNewBookingRequestMail } = require('../../utils/mailer');
 
 // ---------------------------------------------------------------------------
 // HELPER: Combine a Date and "HH:MM" string into a single JS Date
@@ -85,6 +86,20 @@ exports.requestBooking = async (req, res) => {
     slot.status = 'booked';
     slot.appointmentId = appointment._id;
     await slot.save();
+
+    // 4. Send notification emails (fire-and-forget)
+    const advocate = await Advocate.findById(slot.advocateId).select('name email');
+    sendBookingConfirmationMail(
+      req.user.email, req.user.name,
+      slot.date, slot.startTime, slot.endTime,
+      advocate ? advocate.name : 'the Advocate'
+    );
+    if (advocate) {
+      sendNewBookingRequestMail(
+        advocate.email, advocate.name,
+        req.user.name, slot.date, slot.startTime, slot.endTime
+      );
+    }
 
     res.status(201).json({
       success: true,

@@ -1,4 +1,5 @@
 const User = require('../../models/User');
+const { sendVerificationSubmittedMail } = require('../../utils/mailer');
 
 // --- Helper: Update Document Path ---
 const updateDocPath = async (userId, field, filePath, res) => {
@@ -29,24 +30,27 @@ const updateDocPath = async (userId, field, filePath, res) => {
 // @desc    Upload Aadhar Image
 exports.uploadAadhar = async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
+  sendVerificationSubmittedMail(req.user.email, req.user.name, 'Aadhar Card');
   await updateDocPath(req.user.id, 'verificationDocs.aadharImage', req.file.path, res);
 };
 
 // @desc    Upload PAN Image
 exports.uploadPan = async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
+  sendVerificationSubmittedMail(req.user.email, req.user.name, 'PAN Card');
   await updateDocPath(req.user.id, 'verificationDocs.panImage', req.file.path, res);
 };
 
 // @desc    Upload Profile Photo
 exports.uploadPhoto = async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-  // 'photo' is at the top level of the schema, not inside verificationDocs
+  sendVerificationSubmittedMail(req.user.email, req.user.name, 'Profile Photo');
   await updateDocPath(req.user.id, 'photo', req.file.path, res);
 };
 
 // @desc    Upload Verification Video
 exports.uploadVideo = async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
+  sendVerificationSubmittedMail(req.user.email, req.user.name, 'Verification Video');
   await updateDocPath(req.user.id, 'verificationDocs.videoUrl', req.file.path, res);
 };

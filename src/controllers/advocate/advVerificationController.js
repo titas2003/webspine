@@ -1,4 +1,5 @@
 const Advocate = require('../../models/Advocates');
+const { sendVerificationSubmittedMail } = require('../../utils/mailer');
 
 /**
  * @desc  Helper: Update a single field on the Advocate document
@@ -58,6 +59,8 @@ exports.uploadPan = async (req, res) => {
     message: 'PAN image uploaded successfully',
     data: { panImage: req.file.path, panNumber: advocate.panNumber || null }
   });
+
+  sendVerificationSubmittedMail(advocate.email, advocate.name, 'PAN Card');
 };
 
 // ---------------------------------------------------------
@@ -93,6 +96,8 @@ exports.uploadAadhar = async (req, res) => {
     message: 'Aadhar image uploaded successfully',
     data: { aadharImage: req.file.path, aadharNumber: advocate.aadharNumber || null }
   });
+
+  sendVerificationSubmittedMail(advocate.email, advocate.name, 'Aadhar Card');
 };
 
 // ---------------------------------------------------------
@@ -134,6 +139,8 @@ exports.uploadEnrollmentCertificate = async (req, res) => {
       barId: advocate.barId || null
     }
   });
+
+  sendVerificationSubmittedMail(advocate.email, advocate.name, 'Enrollment Certificate');
 };
 
 // ---------------------------------------------------------
@@ -142,7 +149,7 @@ exports.uploadEnrollmentCertificate = async (req, res) => {
 // ---------------------------------------------------------
 exports.uploadPhoto = async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-
+  sendVerificationSubmittedMail(req.user.email, req.user.name, 'Profile Photo');
   await updateAdvField(req.user.advId, 'photo', req.file.path, res);
 };
 
@@ -152,6 +159,6 @@ exports.uploadPhoto = async (req, res) => {
 // ---------------------------------------------------------
 exports.uploadVideo = async (req, res) => {
   if (!req.file) return res.status(400).json({ success: false, message: 'No file uploaded' });
-
+  sendVerificationSubmittedMail(req.user.email, req.user.name, 'Verification Video');
   await updateAdvField(req.user.advId, 'verificationDocs.videoUrl', req.file.path, res);
 };

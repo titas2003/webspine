@@ -1,6 +1,7 @@
 const User = require('../models/User');
 const Blacklist = require('../models/Blacklist');
 const jwt = require('jsonwebtoken');
+const { sendWelcomeMail, sendEmailChangeMail } = require('../utils/mailer');
 
 /**
  * @desc    Helper: Generate Unique 7-digit Alphanumeric Client ID
@@ -78,6 +79,9 @@ class ClientAuthService {
       photo,
       vStatus: 'Pending'
     });
+
+    // Fire-and-forget welcome email
+    sendWelcomeMail(user.email, user.name, 'user', user.clientId);
 
     return {
       token: generateToken(user._id),
@@ -199,6 +203,9 @@ class ClientAuthService {
 
     // Blacklist current session
     if (token) await Blacklist.create({ token });
+
+    // Security notification to old email
+    sendEmailChangeMail(cleanEmail, (await User.findById(userId).select('name'))?.name || 'User');
     return true;
   }
 
