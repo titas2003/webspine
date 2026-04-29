@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
+// Logging
+const requestLogger = require('../middleware/requestLogger');
+const { clientLogger } = require('../utils/logger');
+router.use(requestLogger(clientLogger));
+
 // 1. Import Multer Utility
 const upload = require('../utils/clientMulterConfig');
 

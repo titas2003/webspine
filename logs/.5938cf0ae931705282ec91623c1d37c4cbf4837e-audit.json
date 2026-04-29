@@ -1,0 +1,15 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "/Users/titasmajumder/workshop/maccluodthree.com/temp/maccloudspine/logs/.5938cf0ae931705282ec91623c1d37c4cbf4837e-audit.json",
+    "files": [
+        {
+            "date": 1777462482677,
+            "name": "/Users/titasmajumder/workshop/maccluodthree.com/temp/maccloudspine/logs/advocate-2026-04-29.log",
+            "hash": "661c16a047676633d60ba07d749b780c32199856df4f7993517c78795c389992"
+        }
+    ],
+    "hashType": "sha256"
+}

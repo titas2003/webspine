@@ -1,6 +1,11 @@
 const express = require('express');
 const router = express.Router();
 
+// Logging
+const requestLogger = require('../middleware/requestLogger');
+const { advocateLogger } = require('../utils/logger');
+router.use(requestLogger(advocateLogger));
+
 // --- Controllers ---
 const {
   signUp, login, logout, getProfile

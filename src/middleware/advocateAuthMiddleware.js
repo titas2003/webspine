@@ -22,7 +22,6 @@ exports.protectAdvocate = async (req, res, next) => {
       message: 'Access Denied: No token provided'
     });
   }
-  console.log('Token received for authentication:', token); // Debug log
 
   try {
     // 2. Check Blacklist (Logged out tokens)
