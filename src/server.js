@@ -5,6 +5,7 @@ const dotenv = require('dotenv');
 const connectDB = require('./config/db');
 const advocateRoutes = require('./routes/advocateRoutes');
 const userRoutes = require('./routes/clientRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const path = require('path');
 
 dotenv.config();
@@ -31,7 +32,8 @@ app.get('/test', (req, res) => {
 app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
 app.use('/api/user', userRoutes); 
 
-app.use('/api/advocate', advocateRoutes); // New route path
+app.use('/api/advocate', advocateRoutes);
+app.use('/api/admin', adminRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
