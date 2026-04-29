@@ -1,7 +1,7 @@
 {
-  "name": "webspine",
+  "name": "macclouspine",
   "version": "1.0.0",
-  "description": "advocated spine",
+  "description": "MacclouSpine — Advocate Services Platform",
   "main": "server.js",
   "scripts": {
     "start": "node src/server.js",

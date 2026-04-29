@@ -18,7 +18,7 @@ const sendMail = async ({ to, subject, html }) => {
     });
 
     await transporter.sendMail({
-      from: `"Advocated" <${process.env.MAILID}>`,
+      from: `"MacclouSpine" <${process.env.MAILID}>`,
       to,
       subject,
       html
@@ -41,10 +41,10 @@ exports.sendWelcomeMail = (to, name, role = 'user', userId = null) => {
   const idLabel = role === 'advocate' ? 'Advocate ID' : 'Client ID';
   return sendMail({
     to,
-    subject: '🎉 Welcome to Advocated!',
+    subject: '🎉 Welcome to MacclouSpine!',
     html: `
       <h2>Welcome, ${name}!</h2>
-      <p>Your <strong>${roleLabel}</strong> account on <strong>Advocated</strong> has been created successfully.</p>
+      <p>Your <strong>${roleLabel}</strong> account on <strong>MacclouSpine</strong> has been created successfully.</p>
       ${userId ? `
       <table style="border-collapse:collapse;margin:12px 0;background:#f4f4f4;border-radius:6px;padding:12px">
         <tr>
@@ -67,10 +67,10 @@ exports.sendWelcomeMail = (to, name, role = 'user', userId = null) => {
 exports.sendEmailChangeMail = (to, name) => {
   return sendMail({
     to,
-    subject: '🔐 Your email address has been changed — Advocated',
+    subject: '🔐 Your email address has been changed — MacclouSpine',
     html: `
       <h2>Email Updated, ${name}</h2>
-      <p>Your registered email on <strong>Advocated</strong> has just been changed.</p>
+      <p>Your registered email on <strong>MacclouSpine</strong> has just been changed.</p>
       <p>If you did this, no action is needed. If you did <strong>not</strong> make this change, please contact support immediately.</p>
       <br/>
       <p style="color:#888;font-size:12px">This is an automated security notification.</p>
@@ -85,13 +85,13 @@ exports.sendEmailChangeMail = (to, name) => {
 exports.sendVerificationSubmittedMail = (to, name, docType) => {
   return sendMail({
     to,
-    subject: `📄 ${docType} Submitted for Verification — Advocated`,
+    subject: `📄 ${docType} Submitted for Verification — MacclouSpine`,
     html: `
       <h2>Document Received, ${name}!</h2>
       <p>We have received your <strong>${docType}</strong> for verification.</p>
       <p>Our team will review it and notify you once the verification is complete.</p>
       <br/>
-      <p style="color:#888;font-size:12px">WebSpine Verification Team</p>
+      <p style="color:#888;font-size:12px">MacclouSpine Verification Team</p>
     `
   });
 };
@@ -104,7 +104,7 @@ exports.sendVerificationStatusMail = (to, name, docType, status, reason = null) 
   const isApproved = status === 'Verified';
   return sendMail({
     to,
-    subject: `${isApproved ? '✅' : '❌'} ${docType} Verification ${isApproved ? 'Approved' : 'Rejected'} — WebSpine`,
+    subject: `${isApproved ? '✅' : '❌'} ${docType} Verification ${isApproved ? 'Approved' : 'Rejected'} — MacclouSpine`,
     html: `
       <h2>Hello ${name},</h2>
       <p>Your <strong>${docType}</strong> verification has been <strong>${isApproved ? 'approved ✅' : 'rejected ❌'}</strong>.</p>
@@ -122,7 +122,7 @@ exports.sendVerificationStatusMail = (to, name, docType, status, reason = null) 
 exports.sendBookingConfirmationMail = (to, clientName, slotDate, startTime, endTime, advName) => {
   return sendMail({
     to,
-    subject: '📅 Booking Request Sent — WebSpine',
+    subject: '📅 Booking Request Sent — MacclouSpine',
     html: `
       <h2>Booking Request Sent, ${clientName}!</h2>
       <p>Your appointment request has been sent to <strong>Advocate ${advName}</strong>.</p>
@@ -132,7 +132,7 @@ exports.sendBookingConfirmationMail = (to, clientName, slotDate, startTime, endT
       </table>
       <p style="margin-top:16px">You will receive a confirmation once the advocate responds.</p>
       <br/>
-      <p style="color:#888;font-size:12px">WebSpine Appointment System</p>
+      <p style="color:#888;font-size:12px">MacclouSpine Appointment System</p>
     `
   });
 };
@@ -143,7 +143,7 @@ exports.sendBookingConfirmationMail = (to, clientName, slotDate, startTime, endT
 exports.sendNewBookingRequestMail = (to, advName, clientName, slotDate, startTime, endTime) => {
   return sendMail({
     to,
-    subject: '🔔 New Appointment Request — WebSpine',
+    subject: '🔔 New Appointment Request — MacclouSpine',
     html: `
       <h2>New Booking Request, ${advName}!</h2>
       <p><strong>${clientName}</strong> has requested an appointment with you.</p>
@@ -153,7 +153,7 @@ exports.sendNewBookingRequestMail = (to, advName, clientName, slotDate, startTim
       </table>
       <p style="margin-top:16px">Please log in to accept or reject this request.</p>
       <br/>
-      <p style="color:#888;font-size:12px">WebSpine Appointment System</p>
+      <p style="color:#888;font-size:12px">MacclouSpine Appointment System</p>
     `
   });
 };
@@ -166,7 +166,7 @@ exports.sendBookingResponseMail = (to, clientName, action, slotDate, startTime, 
   const isAccepted = action === 'accepted';
   return sendMail({
     to,
-    subject: `${isAccepted ? '✅' : '❌'} Appointment ${isAccepted ? 'Confirmed' : 'Rejected'} — WebSpine`,
+    subject: `${isAccepted ? '✅' : '❌'} Appointment ${isAccepted ? 'Confirmed' : 'Rejected'} — MacclouSpine`,
     html: `
       <h2>Hello ${clientName},</h2>
       <p>Your appointment request has been <strong>${isAccepted ? 'accepted ✅' : 'rejected ❌'}</strong>.</p>
@@ -177,7 +177,7 @@ exports.sendBookingResponseMail = (to, clientName, action, slotDate, startTime, 
       ${!isAccepted && reason ? `<p style="margin-top:12px"><strong>Reason:</strong> ${reason}</p>` : ''}
       ${isAccepted ? `<p style="margin-top:12px">Meeting details will be shared with you shortly by the advocate.</p>` : ''}
       <br/>
-      <p style="color:#888;font-size:12px">WebSpine Appointment System</p>
+      <p style="color:#888;font-size:12px">MacclouSpine Appointment System</p>
     `
   });
 };
@@ -189,7 +189,7 @@ exports.sendBookingResponseMail = (to, clientName, action, slotDate, startTime, 
 exports.sendMeetingScheduledMail = (to, clientName, meetingType, slotDate, startTime, endTime, meetingLink = null, meetingAddress = null) => {
   return sendMail({
     to,
-    subject: '📍 Meeting Details Shared — WebSpine',
+    subject: '📍 Meeting Details Shared — MacclouSpine',
     html: `
       <h2>Meeting Details, ${clientName}!</h2>
       <p>Your advocate has shared the meeting details for your upcoming appointment.</p>
@@ -201,7 +201,7 @@ exports.sendMeetingScheduledMail = (to, clientName, meetingType, slotDate, start
         ${meetingAddress ? `<tr><td style="padding:4px 12px 4px 0"><strong>Address:</strong></td><td>${meetingAddress}</td></tr>` : ''}
       </table>
       <br/>
-      <p style="color:#888;font-size:12px">WebSpine Appointment System</p>
+      <p style="color:#888;font-size:12px">MacclouSpine Appointment System</p>
     `
   });
 };
