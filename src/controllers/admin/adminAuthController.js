@@ -1,5 +1,6 @@
 const Admin = require('../../models/Admin');
 const AdminCounter = require('../../models/AdminCounter');
+const Blacklist = require('../../models/Blacklist');
 const jwt = require('jsonwebtoken');
 const bcrypt = require('bcryptjs');
 const { sendWelcomeMail, sendOtpMail } = require('../../utils/mailer');
@@ -223,5 +224,20 @@ exports.getProfile = async (req, res) => {
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ---------------------------------------------------------------------------
+// @desc    Logout Admin (blacklist current token)
+// @route   POST /api/admin/logout
+// @access  Protected
+// ---------------------------------------------------------------------------
+exports.logout = async (req, res) => {
+  try {
+    const token = req.headers.authorization.split(' ')[1];
+    await Blacklist.create({ token });
+    res.status(200).json({ success: true, message: 'Logged out successfully' });
+  } catch (error) {
+    res.status(500).json({ success: false, message: 'Logout failed' });
   }
 };

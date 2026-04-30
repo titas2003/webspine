@@ -26,7 +26,8 @@ const {
   loginPassword,
   requestOtp,
   loginOtp,
-  getProfile
+  getProfile,
+  logout
 } = require('../controllers/admin/adminAuthController');
 
 // Category Controllers
@@ -53,6 +54,7 @@ router.use(protectAdmin);
 
 // Profile
 router.get('/profile', getProfile);
+router.post('/logout', logout);
 
 // --- Advocate Category Management ---
 router.post('/categories',       createCategory);
