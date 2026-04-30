@@ -37,8 +37,8 @@ const sendMail = async ({ to, subject, html }) => {
  * @param {string} userId  clientId for clients, advId for advocates
  */
 exports.sendWelcomeMail = (to, name, role = 'user', userId = null) => {
-  const roleLabel = role === 'advocate' ? 'Advocate' : 'Client';
-  const idLabel = role === 'advocate' ? 'Advocate ID' : 'Client ID';
+  const roleLabel = role === 'advocate' ? 'Advocate' : role === 'admin' ? 'Admin' : 'Client';
+  const idLabel   = role === 'advocate' ? 'Advocate ID' : role === 'admin' ? 'ADM ID' : 'Client ID';
   return sendMail({
     to,
     subject: '🎉 Welcome to MacclouSpine!',
@@ -202,6 +202,28 @@ exports.sendMeetingScheduledMail = (to, clientName, meetingType, slotDate, start
       </table>
       <br/>
       <p style="color:#888;font-size:12px">MacclouSpine Appointment System</p>
+    `
+  });
+};
+
+/**
+ * @desc  Admin OTP login email
+ * @param {string} otp  Plain-text OTP (only time it exists unencrypted — sent immediately)
+ */
+exports.sendOtpMail = (to, name, otp) => {
+  return sendMail({
+    to,
+    subject: '🔑 Your MacclouSpine Admin Login OTP',
+    html: `
+      <h2>Hello, ${name}!</h2>
+      <p>Your One-Time Password (OTP) for MacclouSpine Admin login is:</p>
+      <div style="margin:20px 0;text-align:center">
+        <span style="font-size:36px;font-weight:bold;letter-spacing:10px;font-family:monospace;color:#1a1a2e;background:#f0f4ff;padding:12px 24px;border-radius:8px;display:inline-block">${otp}</span>
+      </div>
+      <p style="color:#e74c3c"><strong>⚠️ This OTP is valid for 10 minutes only and can be used once.</strong></p>
+      <p>If you did not request this OTP, please ignore this email and contact your system administrator immediately.</p>
+      <br/>
+      <p style="color:#888;font-size:12px">MacclouSpine Admin Security System</p>
     `
   });
 };
