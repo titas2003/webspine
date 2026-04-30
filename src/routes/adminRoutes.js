@@ -39,6 +39,13 @@ const {
   deleteCategory
 } = require('../controllers/admin/categoryController');
 
+// Fee Policy Controllers
+const {
+  seedDefaultPolicies,
+  getAllPolicies,
+  upsertPolicy
+} = require('../controllers/admin/feePolicyController');
+
 // =============================================================================
 // PUBLIC AUTH ROUTES
 // =============================================================================
@@ -62,5 +69,10 @@ router.get('/categories',        getCategories);
 router.get('/categories/:id',    getCategoryById);
 router.patch('/categories/:id',  updateCategory);
 router.delete('/categories/:id', deleteCategory);
+
+// --- Fee Policy Management ---
+router.post('/fee-policies/seed',        seedDefaultPolicies);
+router.get('/fee-policies',              getAllPolicies);
+router.put('/fee-policies/:bracketKey',  upsertPolicy);
 
 module.exports = router;

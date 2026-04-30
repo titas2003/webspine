@@ -4,6 +4,7 @@ const AdvocateCategory = require('../../models/AdvocateCategory');
 const Blacklist = require('../../models/Blacklist');
 const jwt = require('jsonwebtoken');
 const { sendWelcomeMail } = require('../../utils/mailer');
+const { findPolicyForExperience } = require('../admin/feePolicyController');
 
 /**
  * HELPER: Generate Unique 7-Digit AdvID
@@ -51,69 +52,61 @@ const generateAdvId = async (stateName) => {
  */
 exports.signUp = async (req, res) => {
   try {
-    const { name, email, phone, state, password, courtDivision, specialization } = req.body;
+    const { name, email, phone, state, password, courtDivision, specialization, yearsOfExperience } = req.body;
 
     // Validate required fields
     if (!name || !email || !phone || !state || !password) {
       return res.status(400).json({ success: false, message: 'Please provide all required fields' });
     }
+    if (yearsOfExperience === undefined || yearsOfExperience < 0) {
+      return res.status(400).json({ success: false, message: 'yearsOfExperience is required and must be 0 or more' });
+    }
 
     // Validate courtDivision if provided
     if (courtDivision) {
-      const division = await AdvocateCategory.findOne({
-        _id: courtDivision,
-        parent: null,
-        isActive: true
-      });
+      const division = await AdvocateCategory.findOne({ _id: courtDivision, parent: null, isActive: true });
       if (!division) {
         return res.status(400).json({ success: false, message: 'Invalid courtDivision: must be an active top-level court category' });
       }
     }
 
-    // Validate specialization if provided (must be child of the selected division)
+    // Validate specialization if provided
     if (specialization) {
       if (!courtDivision) {
         return res.status(400).json({ success: false, message: 'courtDivision is required when specialization is provided' });
       }
-      const spec = await AdvocateCategory.findOne({
-        _id: specialization,
-        parent: courtDivision,
-        isActive: true
-      });
+      const spec = await AdvocateCategory.findOne({ _id: specialization, parent: courtDivision, isActive: true });
       if (!spec) {
         return res.status(400).json({ success: false, message: 'Invalid specialization: must be an active subcategory of the selected courtDivision' });
       }
     }
 
     // Check for existing advocates
-    try {
-      const exists = await Advocate.findOne({ $or: [{ email }, { phone }] });
-      if (exists) {
-        return res.status(400).json({ success: false, message: 'Email or Phone already registered' });
-      }
-    } catch (err) {
-      return res.status(500).json({ success: false, message: 'Database error during registration' });
+    const exists = await Advocate.findOne({ $or: [{ email }, { phone }] });
+    if (exists) {
+      return res.status(400).json({ success: false, message: 'Email or Phone already registered' });
     }
+
+    // Lookup fee policy for experience bracket — assign default fee
+    const policy = await findPolicyForExperience(yearsOfExperience);
+    const feesPerSitting = policy ? policy.defaultFee : 0;
 
     // Generate unique AdvID
     const advId = await generateAdvId(state);
 
     // Create Advocate
-    let advocate;
-    try {
-      advocate = await Advocate.create({
-        advId,
-        name,
-        email,
-        phone,
-        state,
-        password,
-        courtDivision: courtDivision || null,
-        specialization: specialization || null
-      });
-    } catch (error) {
-      return res.status(500).json({ success: false, message: 'Database error during registration' });
-    }
+    const advocate = await Advocate.create({
+      advId,
+      name,
+      email,
+      phone,
+      state,
+      password,
+      yearsOfExperience,
+      feesPerSitting,
+      courtDivision: courtDivision || null,
+      specialization: specialization || null
+    });
 
     // Generate Token
     const token = jwt.sign({ id: advocate._id }, process.env.JWT_SECRET, { expiresIn: '30d' });

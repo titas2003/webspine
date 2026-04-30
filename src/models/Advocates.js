@@ -11,6 +11,12 @@ const advocateSchema = new mongoose.Schema({
   vStatus: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' },
 
   /**
+   * Experience & Fees
+   */
+  yearsOfExperience: { type: Number, default: 0, min: 0 },
+  feesPerSitting: { type: Number, default: 0, min: 0 },
+
+  /**
    * Court Category & Specialization
    * courtDivision → top-level AdvocateCategory (parent: null)
    * specialization → subcategory whose parent === courtDivision

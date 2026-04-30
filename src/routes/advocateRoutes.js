@@ -16,6 +16,10 @@ const {
 } = require('../controllers/advocate/advVerificationController');
 
 const {
+  getFees, updateFees
+} = require('../controllers/advocate/advFeesController');
+
+const {
   setAvailability,
   listAvailability,
   alterSlot,
@@ -46,6 +50,10 @@ router.use(protectAdvocate);
 // --- Account ---
 router.post('/logout',  logout);
 router.get('/profile',  getProfile);
+
+// --- Fee Management ---
+router.get('/fees',     getFees);
+router.patch('/fees',   updateFees);
 
 // --- Verification Document Uploads ---
 router.patch('/verify/pan',        advocateUpload.single('panImage'),              uploadPan);
