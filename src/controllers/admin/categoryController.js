@@ -54,7 +54,7 @@ exports.createCategory = async (req, res) => {
     });
   } catch (error) {
     if (error.code === 11000) {
-      return res.status(409).json({ success: false, message: 'A category with this slug already exists. Provide a unique slug.' });
+      return res.status(409).json({ success: false, message: 'A category with this name already exists under the same parent. Choose a different name or slug.' });
     }
     res.status(500).json({ success: false, message: error.message });
   }

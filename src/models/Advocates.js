@@ -11,6 +11,22 @@ const advocateSchema = new mongoose.Schema({
   vStatus: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' },
 
   /**
+   * Court Category & Specialization
+   * courtDivision → top-level AdvocateCategory (parent: null)
+   * specialization → subcategory whose parent === courtDivision
+   */
+  courtDivision: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'AdvocateCategory',
+    default: null
+  },
+  specialization: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'AdvocateCategory',
+    default: null
+  },
+
+  /**
    * Government Identity Numbers
    */
   panNumber: {

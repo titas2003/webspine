@@ -21,7 +21,6 @@ const advocateCategorySchema = new mongoose.Schema({
   },
   slug: {
     type: String,
-    unique: true,
     lowercase: true,
     trim: true
   },
@@ -48,6 +47,10 @@ const advocateCategorySchema = new mongoose.Schema({
   timestamps: true,
   collection: 'AdvocateCategories'
 });
+
+// Compound unique index: same slug is allowed under different parents
+// e.g. civil-court under both District Court and Lower Court is fine
+advocateCategorySchema.index({ slug: 1, parent: 1 }, { unique: true });
 
 // Auto-generate slug from name before saving if not provided
 advocateCategorySchema.pre('save', async function () {

@@ -1,5 +1,6 @@
 const Advocate = require('../../models/Advocates');
 const AdvocateCounter = require('../../models/AdvocateCounter');
+const AdvocateCategory = require('../../models/AdvocateCategory');
 const Blacklist = require('../../models/Blacklist');
 const jwt = require('jsonwebtoken');
 const { sendWelcomeMail } = require('../../utils/mailer');
@@ -50,25 +51,53 @@ const generateAdvId = async (stateName) => {
  */
 exports.signUp = async (req, res) => {
   try {
-    const { name, email, phone, state, password } = req.body;
-    // Check if body fields are present
+    const { name, email, phone, state, password, courtDivision, specialization } = req.body;
+
+    // Validate required fields
     if (!name || !email || !phone || !state || !password) {
       return res.status(400).json({ success: false, message: 'Please provide all required fields' });
     }
 
-    // Check for existing users
+    // Validate courtDivision if provided
+    if (courtDivision) {
+      const division = await AdvocateCategory.findOne({
+        _id: courtDivision,
+        parent: null,
+        isActive: true
+      });
+      if (!division) {
+        return res.status(400).json({ success: false, message: 'Invalid courtDivision: must be an active top-level court category' });
+      }
+    }
+
+    // Validate specialization if provided (must be child of the selected division)
+    if (specialization) {
+      if (!courtDivision) {
+        return res.status(400).json({ success: false, message: 'courtDivision is required when specialization is provided' });
+      }
+      const spec = await AdvocateCategory.findOne({
+        _id: specialization,
+        parent: courtDivision,
+        isActive: true
+      });
+      if (!spec) {
+        return res.status(400).json({ success: false, message: 'Invalid specialization: must be an active subcategory of the selected courtDivision' });
+      }
+    }
+
+    // Check for existing advocates
     try {
       const exists = await Advocate.findOne({ $or: [{ email }, { phone }] });
       if (exists) {
         return res.status(400).json({ success: false, message: 'Email or Phone already registered' });
       }
     } catch (err) {
-      console.error('Error checking existing advocate:', err);
       return res.status(500).json({ success: false, message: 'Database error during registration' });
     }
 
     // Generate unique AdvID
     const advId = await generateAdvId(state);
+
     // Create Advocate
     let advocate;
     try {
@@ -78,13 +107,14 @@ exports.signUp = async (req, res) => {
         email,
         phone,
         state,
-        password
+        password,
+        courtDivision: courtDivision || null,
+        specialization: specialization || null
       });
-      console.log('Created Advocate:', advocate);
     } catch (error) {
-      console.error('Error creating advocate:', error);
       return res.status(500).json({ success: false, message: 'Database error during registration' });
     }
+
     // Generate Token
     const token = jwt.sign({ id: advocate._id }, process.env.JWT_SECRET, { expiresIn: '30d' });
 
