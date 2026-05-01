@@ -6,9 +6,9 @@
   "success": true,
   "message": "Admin account created successfully",
   "data": {
-    "admId": "ADM000003",
+    "admId": "ADM000004",
     "name": "Super Admin",
-    "email": "admin_1777573186067@example.com"
+    "email": "admin_1777606822505@example.com"
   }
 }
 ```
@@ -17,11 +17,11 @@
 ```json
 {
   "success": true,
-  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjM5ZDQyYjcyOWJmMDU2MTA5MmVjZSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NzU3MzE4NiwiZXhwIjoxNzgwMTY1MTg2fQ.peeHOilQQsensc3LxHCnec7uplAHaR7nLsA5kaRg004",
+  "token": "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IjY5ZjQyMGE2YjcyOWJmMDU2MTA5MmVmNSIsInJvbGUiOiJhZG1pbiIsImlhdCI6MTc3NzYwNjgyMywiZXhwIjoxNzgwMTk4ODIzfQ.CSn5LdTFl3CDhR8PHXujSHzWoO2EURXuQhkkFvg5TYc",
   "data": {
-    "admId": "ADM000003",
+    "admId": "ADM000004",
     "name": "Super Admin",
-    "email": "admin_1777573186067@example.com"
+    "email": "admin_1777606822505@example.com"
   }
 }
 ```
@@ -39,10 +39,10 @@
       "createdAt": "2026-04-30T18:10:42.132Z",
       "defaultFee": 300,
       "isActive": true,
-      "maxFee": 900,
+      "maxFee": 700,
       "maxYears": 3,
       "minYears": 1,
-      "updatedAt": "2026-04-30T18:19:47.176Z"
+      "updatedAt": "2026-05-01T03:40:23.896Z"
     },
     {
       "_id": "69f39b22921b4d8fcb0a7c91",
@@ -54,7 +54,7 @@
       "maxFee": 950,
       "maxYears": 6,
       "minYears": 3,
-      "updatedAt": "2026-04-30T18:19:47.231Z"
+      "updatedAt": "2026-05-01T03:40:23.992Z"
     },
     {
       "_id": "69f39b22921b4d8fcb0a7c92",
@@ -66,7 +66,7 @@
       "maxFee": 1800,
       "maxYears": 11,
       "minYears": 6,
-      "updatedAt": "2026-04-30T18:19:47.286Z"
+      "updatedAt": "2026-05-01T03:40:24.087Z"
     },
     {
       "_id": "69f39b22921b4d8fcb0a7c93",
@@ -78,9 +78,17 @@
       "maxFee": 4500,
       "maxYears": null,
       "minYears": 11,
-      "updatedAt": "2026-04-30T18:19:47.342Z"
+      "updatedAt": "2026-05-01T03:40:24.179Z"
     }
   ]
+}
+```
+
+### POST /admin/fee-policies/refresh
+```json
+{
+  "error": "Invalid JSON",
+  "body": "<!DOCTYPE html>\n<html lang=\"en\">\n<head>\n<meta charset=\"utf-8\">\n<title>Error</title>\n</head>\n<body>\n<pre>Cannot POST /api/admin/fee-policies/refresh</pre>\n</body>\n</html>\n"
 }
 ```
 

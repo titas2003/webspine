@@ -43,16 +43,17 @@ const {
 const {
   seedDefaultPolicies,
   getAllPolicies,
-  upsertPolicy
+  upsertPolicy,
+  refreshFees
 } = require('../controllers/admin/feePolicyController');
 
 // =============================================================================
 // PUBLIC AUTH ROUTES
 // =============================================================================
-router.post('/signup',      authLimiter, signUp);
-router.post('/login',       authLimiter, loginPassword);
-router.post('/request-otp', otpLimiter,  requestOtp);
-router.post('/login-otp',   authLimiter, loginOtp);
+router.post('/signup', authLimiter, signUp);
+router.post('/login', authLimiter, loginPassword);
+router.post('/request-otp', otpLimiter, requestOtp);
+router.post('/login-otp', authLimiter, loginOtp);
 
 // =============================================================================
 // PROTECTED ADMIN ROUTES
@@ -64,15 +65,16 @@ router.get('/profile', getProfile);
 router.post('/logout', logout);
 
 // --- Advocate Category Management ---
-router.post('/categories',       createCategory);
-router.get('/categories',        getCategories);
-router.get('/categories/:id',    getCategoryById);
-router.patch('/categories/:id',  updateCategory);
+router.post('/categories', createCategory);
+router.get('/categories', getCategories);
+router.get('/categories/:id', getCategoryById);
+router.patch('/categories/:id', updateCategory);
 router.delete('/categories/:id', deleteCategory);
 
 // --- Fee Policy Management ---
-router.post('/fee-policies/seed',        seedDefaultPolicies);
-router.get('/fee-policies',              getAllPolicies);
-router.put('/fee-policies/:bracketKey',  upsertPolicy);
+router.post('/fee-policies/refreshFees', refreshFees);
+router.post('/fee-policies/seed', seedDefaultPolicies);
+router.get('/fee-policies', getAllPolicies);
+router.put('/fee-policies/:bracketKey', upsertPolicy);
 
 module.exports = router;

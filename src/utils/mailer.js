@@ -227,3 +227,67 @@ exports.sendOtpMail = (to, name, otp) => {
     `
   });
 };
+
+/**
+ * @desc  Notify advocate of a fee policy violation
+ */
+exports.sendFeeViolationAdvocateMail = (to, name, currentFee, minFee, maxFee, bracket) => {
+  return sendMail({
+    to,
+    subject: '⚠️ Action Required: Fee Policy Violation — MacclouSpine',
+    html: `
+      <h2>Important Notice, ${name}</h2>
+      <p>Our automated audit has identified that your current fee per sitting (<strong>₹${currentFee}</strong>) is outside the permitted range for your experience bracket (<strong>${bracket}</strong>).</p>
+      <table style="border-collapse:collapse;margin:12px 0;background:#fff5f5;border:1px solid #feb2b2;padding:12px;width:100%;border-radius:6px">
+        <tr><td style="padding:8px"><strong>Minimum Required Fee:</strong></td><td>₹${minFee}</td></tr>
+        <tr><td style="padding:8px"><strong>Maximum Permitted Fee:</strong></td><td>₹${maxFee}</td></tr>
+      </table>
+      <p>Please update your fees via the dashboard to comply with the platform policy. Failure to do so may result in temporary account suspension.</p>
+      <br/>
+      <p style="color:#888;font-size:12px">MacclouSpine Compliance Team</p>
+    `
+  });
+};
+
+/**
+ * @desc  Notify admin of all fee policy violations found during a refresh
+ */
+exports.sendFeeViolationSummaryAdminMail = (to, name, violationCount, violations) => {
+  let tableRows = violations.map(v => `
+    <tr>
+      <td style="padding:8px;border-bottom:1px solid #ddd">${v.advId}</td>
+      <td style="padding:8px;border-bottom:1px solid #ddd">${v.name}</td>
+      <td style="padding:8px;border-bottom:1px solid #ddd">${v.currentFee}</td>
+      <td style="padding:8px;border-bottom:1px solid #ddd">${v.allowedRange}</td>
+    </tr>
+  `).join('');
+
+  return sendMail({
+    to,
+    subject: '📊 Fee Policy Audit Summary — MacclouSpine',
+    html: `
+      <h2>Hello, ${name}</h2>
+      <p>The fee policy refresh audit has been completed.</p>
+      <p><strong>Total Violations Found:</strong> ${violationCount}</p>
+      ${violationCount > 0 ? `
+      <table style="border-collapse:collapse;width:100%;margin-top:16px;font-size:13px">
+        <thead>
+          <tr style="background:#f4f4f4;text-align:left">
+            <th style="padding:8px;border-bottom:1px solid #ccc">AdvID</th>
+            <th style="padding:8px;border-bottom:1px solid #ccc">Name</th>
+            <th style="padding:8px;border-bottom:1px solid #ccc">Current Fee</th>
+            <th style="padding:8px;border-bottom:1px solid #ccc">Allowed Range</th>
+          </tr>
+        </thead>
+        <tbody>
+          ${tableRows}
+        </tbody>
+      </table>
+      ` : '<p>No violations were found. All advocates are compliant with current policies.</p>'}
+      <br/>
+      <p style="color:#888;font-size:12px">MacclouSpine System Audit</p>
+    `
+  });
+};
+
+

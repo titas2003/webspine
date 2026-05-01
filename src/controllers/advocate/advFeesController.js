@@ -91,8 +91,15 @@ exports.updateFees = async (req, res) => {
       newFee = advocate.feesPerSitting;
     }
 
+    const { calculateCharges } = require('../../controllers/admin/feePolicyController');
+    const charges = calculateCharges(newFee);
+
     advocate.yearsOfExperience = targetYears;
     advocate.feesPerSitting = newFee;
+    advocate.platformCharge = charges.platformCharge;
+    advocate.clientContribution = charges.clientContribution;
+    advocate.advocateContribution = charges.advocateContribution;
+    
     await advocate.save();
 
     res.status(200).json({
@@ -103,6 +110,9 @@ exports.updateFees = async (req, res) => {
       data: {
         feesPerSitting: newFee,
         yearsOfExperience: targetYears,
+        platformCharge: charges.platformCharge,
+        clientContribution: charges.clientContribution,
+        advocateContribution: charges.advocateContribution,
         bracket: {
           bracketKey: policy.bracketKey,
           maxFee: policy.maxFee

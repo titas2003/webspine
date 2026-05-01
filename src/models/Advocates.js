@@ -15,6 +15,9 @@ const advocateSchema = new mongoose.Schema({
    */
   yearsOfExperience: { type: Number, default: 0, min: 0 },
   feesPerSitting: { type: Number, default: 0, min: 0 },
+  platformCharge: { type: Number, default: 0 },      // 10% total
+  clientContribution: { type: Number, default: 0 },  // 4% surcharge
+  advocateContribution: { type: Number, default: 0 },// 6% deduction
 
   /**
    * Court Category & Specialization

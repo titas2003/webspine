@@ -54,6 +54,13 @@ async function testAdmin() {
   });
   results.push({ endpoint: '/admin/fee-policies/seed', method: 'POST', response: seedData });
 
+  // 3.5 Refresh Fees
+  const refreshRes = await safeFetch(`${BASE_URL}/admin/fee-policies/refresh`, {
+    method: 'POST',
+    headers: { 'Authorization': `Bearer ${token}` }
+  });
+  results.push({ endpoint: '/admin/fee-policies/refresh', method: 'POST', response: refreshRes });
+
   // 4. Get Categories
   const catData = await safeFetch(`${BASE_URL}/admin/categories`, {
     method: 'GET',

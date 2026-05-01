@@ -33,6 +33,7 @@
 | `/fee-policies/seed` | `POST` | Create default 4 brackets | (No body required) |
 | `/fee-policies` | `GET` | List all experience brackets | (No body required) |
 | `/fee-policies/:key` | `PUT` | Update bracket fees/limits | (Key: `3-6`, Body: `{"defaultFee":750,"maxFee":1100}`) |
+| `/fee-policies/refreshFees` | `POST` | Audit fee violations & email notifications | (No body required) |
 
 ---
 
@@ -125,3 +126,16 @@
     "message": "Fees cannot exceed ₹1000 for your experience bracket (3-6 years)"
 }
 ```
+
+---
+
+## 💰 Platform Fee Split (10%)
+All fees (`feesPerSitting`) now calculate a **10% Platform Charge** split as follows:
+- **Client Contribution (4%)**: Added as a surcharge to the client.
+- **Advocate Contribution (6%)**: Deducted from the advocate's payout.
+- **Total Platform Revenue**: 10% of the base fee.
+
+*Example: If `feesPerSitting` = ₹1000:*
+- *Client pays: ₹1040*
+- *Advocate receives: ₹940*
+- *Platform earns: ₹100*

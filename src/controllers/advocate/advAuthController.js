@@ -89,12 +89,16 @@ exports.signUp = async (req, res) => {
 
     // Lookup fee policy for experience bracket — assign default fee
     const policy = await findPolicyForExperience(yearsOfExperience);
-    const feesPerSitting = policy ? policy.defaultFee : 0;
+    const initialFee = policy ? policy.defaultFee : 0;
 
     // Generate unique AdvID
     const advId = await generateAdvId(state);
 
-    // Create Advocate
+    // 5. Calculate 10% platform split (4% client, 6% advocate)
+    const { calculateCharges } = require('../../controllers/admin/feePolicyController');
+    const charges = calculateCharges(initialFee);
+
+    // 6. Create advocate
     const advocate = await Advocate.create({
       advId,
       name,
@@ -103,7 +107,10 @@ exports.signUp = async (req, res) => {
       state,
       password,
       yearsOfExperience,
-      feesPerSitting,
+      feesPerSitting: initialFee,
+      platformCharge: charges.platformCharge,
+      clientContribution: charges.clientContribution,
+      advocateContribution: charges.advocateContribution,
       courtDivision: courtDivision || null,
       specialization: specialization || null
     });
