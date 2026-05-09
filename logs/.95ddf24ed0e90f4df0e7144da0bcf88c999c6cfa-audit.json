@@ -19,6 +19,26 @@
             "date": 1777606827261,
             "name": "/Users/titasmajumder/workshop/maccluodthree.com/temp/maccloudspine/logs/client-2026-05-01.log",
             "hash": "8b11d244bfb98a034d95d6659018ed31615c57184e63dea01057069dedaae1b7"
+        },
+        {
+            "date": 1778002987805,
+            "name": "/Users/titasmajumder/workshop/maccluodthree.com/temp/maccloudspine/logs/client-2026-05-05.log",
+            "hash": "139116a214b0acf1270cf2e3aa6e20402f4cc780a15c73b024f3f543cb46b828"
+        },
+        {
+            "date": 1778075263888,
+            "name": "/Users/titasmajumder/workshop/maccluodthree.com/temp/maccloudspine/logs/client-2026-05-06.log",
+            "hash": "c778ac718e80d33685c9f595dec7ac0bb26006c93853dfab9940cc54e64a97b4"
+        },
+        {
+            "date": 1778166555161,
+            "name": "/Users/titasmajumder/workshop/maccluodthree.com/temp/maccloudspine/logs/client-2026-05-07.log",
+            "hash": "d0190967692ed41202128d72b9c1d97977527b9e14c1d3695b4ca5d1b59d8318"
+        },
+        {
+            "date": 1778299911438,
+            "name": "/Users/titasmajumder/workshop/maccluodthree.com/temp/maccloudspine/logs/client-2026-05-09.log",
+            "hash": "fabdad3370f1152e167e584cff5b04c72c3ffb924ecc4eaaaf099c4ab1f38278"
         }
     ],
     "hashType": "sha256"

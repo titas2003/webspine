@@ -45,6 +45,9 @@ const {
   cancelBooking
 } = require('../controllers/client/clientAppointmentController');
 
+// 5. Import Advocate Search Controller
+const { searchAdvocates } = require('../controllers/client/advocateSearchController');
+
 // --- PUBLIC ROUTES ---
 router.post('/signup', authLimiter, signUp);
 router.post('/login', authLimiter, login);
@@ -70,6 +73,11 @@ router.patch('/verify/aadhar', upload.single('aadharImage'), uploadAadhar);
 router.patch('/verify/pan', upload.single('panImage'), uploadPan);
 router.patch('/verify/photo', upload.single('photo'), uploadPhoto);
 router.patch('/verify/video', upload.single('video'), uploadVideo);
+
+// =============================================================================
+// ADVOCATE SEARCH
+// =============================================================================
+router.get('/advocates/search', searchAdvocates);    // Search / filter advocates
 
 // =============================================================================
 // APPOINTMENT ROUTES

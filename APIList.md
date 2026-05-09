@@ -35,7 +35,21 @@
 | `/fee-policies/:key` | `PUT` | Update bracket fees/limits | (Key: `3-6`, Body: `{"defaultFee":750,"maxFee":1100}`) |
 | `/fee-policies/refreshFees` | `POST` | Audit fee violations & email notifications | (No body required) |
 
+### 4. Advocate Verification Management
+| Endpoint | Method | Description | Example Input (JSON) |
+| :--- | :--- | :--- | :--- |
+| `/advocates/search` | `GET` | Search/filter advocates | (Query: `?name=Arjun&vStatus=Pending`) |
+| `/advocates/:advId` | `GET` | View full advocate details | (advId: `WBA0001`) |
+| `/advocates/:advId/verify` | `PATCH` | Verify or Reject an advocate | `{"vStatus":"Verified","reason":"All documents valid"}` |
+
+**Verify/Reject Rules:**
+- `vStatus` must be `Verified` or `Rejected`
+- `reason` is **mandatory** when rejecting, optional when verifying
+- Sends email notification to the advocate with the reason
+- Prevents redundant status updates (e.g. verifying an already verified advocate)
+
 ---
+
 
 ## ⚖️ Advocate APIs
 **Route Prefix**: `/advocate`
@@ -68,6 +82,11 @@
 | `/appointments/:id/respond`| `PATCH` | Accept or Reject request | `{"status":"accepted"}` |
 | `/appointments/:id/schedule`| `PATCH` | Add Meeting Link/Location | `{"meetingType":"video","meetingLink":"https://meet.google.com/abc"}` |
 
+### 4. Location
+| Endpoint | Method | Description | Example Input (JSON) |
+| :--- | :--- | :--- | :--- |
+| `/location` | `PATCH` | Update GPS Location | `{"latitude":22.5726,"longitude":88.3639,"address":"Salt Lake, Kolkata"}` |
+
 ---
 
 ## 👤 Client (User) APIs
@@ -81,7 +100,27 @@
 | `/login` | `POST` | Login with Phone/Email/ClientID | `{"identifier":"9123456789","password":"Pass123"}` |
 | `/location` | `PATCH` | Update GPS Location | `{"latitude":22.5726,"longitude":88.3639,"address":"Kolkata, WB"}` |
 
-### 2. Appointments
+### 2. Advocate Search & Filter
+| Endpoint | Method | Description | Query Parameters |
+| :--- | :--- | :--- | :--- |
+| `/advocates/search` | `GET` | Search/filter verified advocates | `?name=Arjun&court=<id_or_slug>&specialization=<id_or_slug>&minFee=500&maxFee=1500&lat=22.57&lng=88.36&radius=50&sortBy=distance&page=1&limit=20` |
+
+**Supported Query Params:**
+| Param | Type | Description |
+| :--- | :--- | :--- |
+| `name` | string | Partial name match (case-insensitive) |
+| `court` | string | Court division ObjectId or slug |
+| `specialization` | string | Specialization ObjectId or slug |
+| `minFee` | number | Minimum fee per sitting |
+| `maxFee` | number | Maximum fee per sitting |
+| `lat` | number | Client latitude (for nearby search) |
+| `lng` | number | Client longitude (for nearby search) |
+| `radius` | number | Search radius in km (default: 50) |
+| `sortBy` | string | `distance`, `fee_asc`, `fee_desc`, `name_asc` |
+| `page` | number | Page number (default: 1) |
+| `limit` | number | Results per page (default: 20, max: 50) |
+
+### 3. Appointments
 | Endpoint | Method | Description | Example Input (JSON) |
 | :--- | :--- | :--- | :--- |
 | `/advocates/:advId/slots`| `GET` | Browse an Advocate's slots | (advId: `WBA0001`) |

@@ -9,6 +9,8 @@ const advocateSchema = new mongoose.Schema({
   state: { type: String, required: true, uppercase: true },
   password: { type: String, required: true, minlength: 6, select: false },
   vStatus: { type: String, enum: ['Pending', 'Verified', 'Rejected'], default: 'Pending' },
+  vReason: { type: String, trim: true, default: null },
+  vUpdatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null },
 
   /**
    * Experience & Fees
@@ -71,6 +73,17 @@ const advocateSchema = new mongoose.Schema({
    * Stores paths relative to uploads/advocates/{advId}/
    */
   photo: { type: String, default: null },
+
+  /**
+   * Location (GeoJSON Point) — for nearby-advocate search
+   * coordinates: [longitude, latitude]  (GeoJSON order)
+   */
+  location: {
+    type: { type: String, enum: ['Point'], default: 'Point' },
+    coordinates: { type: [Number], default: [0, 0] }
+  },
+  address: { type: String, trim: true, default: null },
+
   verificationDocs: {
     panImage: { type: String, default: null },
     aadharImage: { type: String, default: null },
@@ -78,6 +91,9 @@ const advocateSchema = new mongoose.Schema({
     videoUrl: { type: String, default: null }
   }
 }, { timestamps: true, collection: 'Advocates' });
+
+// Geospatial index for nearby search
+advocateSchema.index({ location: '2dsphere' });
 
 // Hash password before saving - REMOVED 'next'
 advocateSchema.pre('save', async function() {

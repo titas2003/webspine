@@ -20,6 +20,10 @@ const {
 } = require('../controllers/advocate/advFeesController');
 
 const {
+  updateLocation
+} = require('../controllers/advocate/advLocationController');
+
+const {
   setAvailability,
   listAvailability,
   alterSlot,
@@ -54,6 +58,9 @@ router.get('/profile',  getProfile);
 // --- Fee Management ---
 router.get('/fees',     getFees);
 router.patch('/fees',   updateFees);
+
+// --- Location ---
+router.patch('/location', updateLocation);   // Set / update GPS coordinates
 
 // --- Verification Document Uploads ---
 router.patch('/verify/pan',        advocateUpload.single('panImage'),              uploadPan);

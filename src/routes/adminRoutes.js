@@ -77,4 +77,14 @@ router.post('/fee-policies/seed', seedDefaultPolicies);
 router.get('/fee-policies', getAllPolicies);
 router.put('/fee-policies/:bracketKey', upsertPolicy);
 
+// --- Advocate Search (shared controller with client) ---
+const { searchAdvocates } = require('../controllers/client/advocateSearchController');
+router.get('/advocates/search', searchAdvocates);
+
+// --- Advocate Verification Management ---
+const { verifyAdvocate, getAdvocateDetails } = require('../controllers/admin/advocateVerificationController');
+router.get('/advocates/:advId',          getAdvocateDetails);   // View full advocate details
+router.patch('/advocates/:advId/verify', verifyAdvocate);       // Verify or Reject
+
 module.exports = router;
+
