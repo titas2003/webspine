@@ -1,0 +1,20 @@
+{
+    "keep": {
+        "days": true,
+        "amount": 30
+    },
+    "auditLog": "/Users/titasmajumder/workshop/maccloudprod/maccloudspine/logs/.3d9ecc2c950efd48711cad2df858ba945352da23-audit.json",
+    "files": [
+        {
+            "date": 1778323249356,
+            "name": "/Users/titasmajumder/workshop/maccloudprod/maccloudspine/logs/advocate-2026-05-09.log",
+            "hash": "2a92347ed07030439b963f85d979ffac65a3971cb3165bf4ee17a7350badac0b"
+        },
+        {
+            "date": 1778390023668,
+            "name": "/Users/titasmajumder/workshop/maccloudprod/maccloudspine/logs/advocate-2026-05-10.log",
+            "hash": "c88431e97f979b1fbbeccd391d61e4d7695b91ea470faebab0686c3578bf71f2"
+        }
+    ],
+    "hashType": "sha256"
+}

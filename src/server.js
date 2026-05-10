@@ -6,6 +6,7 @@ const connectDB = require('./config/db');
 const advocateRoutes = require('./routes/advocateRoutes');
 const userRoutes = require('./routes/clientRoutes');
 const adminRoutes = require('./routes/adminRoutes');
+const commonRoutes = require('./routes/commonRoutes');
 const path = require('path');
 
 dotenv.config();
@@ -34,6 +35,7 @@ app.use('/api/user', userRoutes);
 
 app.use('/api/advocate', advocateRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/common', commonRoutes);
 
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => console.log(`🚀 Server running on port ${PORT}`));
