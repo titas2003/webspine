@@ -37,7 +37,13 @@ exports.protectClient = async (req, res, next) => {
     // 3. Verify Token
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 4. Find User & Exclude Password
+    // 4. Check for Global Logout
+    const globalLogout = await Blacklist.findOne({ token: 'GLOBAL_LOGOUT' }).sort({ createdAt: -1 });
+    if (globalLogout && (decoded.iat * 1000) < globalLogout.createdAt.getTime()) {
+      return res.status(401).json({ success: false, message: 'All active sessions have been terminated by an administrator. Please login again.' });
+    }
+
+    // 5. Find User & Exclude Password
     req.user = await User.findById(decoded.id).select('-password');
 
     if (!req.user) {

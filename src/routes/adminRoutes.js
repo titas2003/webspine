@@ -86,5 +86,9 @@ const { verifyAdvocate, getAdvocateDetails } = require('../controllers/admin/adv
 router.get('/advocates/:advId',          getAdvocateDetails);   // View full advocate details
 router.patch('/advocates/:advId/verify', verifyAdvocate);       // Verify or Reject
 
+// --- System Management ---
+const { dropAllSessions } = require('../controllers/admin/systemController');
+router.post('/system/drop-all-sessions', dropAllSessions);
+
 module.exports = router;
 

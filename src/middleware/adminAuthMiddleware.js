@@ -27,7 +27,13 @@ exports.protectAdmin = async (req, res, next) => {
     // 2. Verify JWT signature and expiry
     const decoded = jwt.verify(token, process.env.JWT_SECRET);
 
-    // 3. Ensure the token belongs to an admin (role claim)
+    // 3. Check for Global Logout
+    const globalLogout = await Blacklist.findOne({ token: 'GLOBAL_LOGOUT' }).sort({ createdAt: -1 });
+    if (globalLogout && (decoded.iat * 1000) < globalLogout.createdAt.getTime()) {
+      return res.status(401).json({ success: false, message: 'All active sessions have been terminated by an administrator. Please login again.' });
+    }
+
+    // 4. Ensure the token belongs to an admin (role claim)
     if (decoded.role !== 'admin') {
       return res.status(403).json({ success: false, message: 'Forbidden: Admin access only' });
     }
