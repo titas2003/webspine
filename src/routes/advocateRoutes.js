@@ -12,7 +12,12 @@ const {
 } = require('../controllers/advocate/advAuthController');
 
 const {
-  uploadPan, uploadAadhar, uploadEnrollmentCertificate, uploadPhoto, uploadVideo
+  getVerificationStatus,
+  uploadPan, editPan,
+  uploadAadhar, editAadhar,
+  uploadEnrollmentCertificate, editEnrollment,
+  uploadPhoto, editPhoto,
+  uploadVideo, editVideo
 } = require('../controllers/advocate/advVerificationController');
 
 const {
@@ -62,12 +67,23 @@ router.patch('/fees',   updateFees);
 // --- Location ---
 router.patch('/location', updateLocation);   // Set / update GPS coordinates
 
-// --- Verification Document Uploads ---
+// --- Verification Document Management ---
+// 1. GET (Check status/Parallel check)
+router.get('/verify/:type', getVerificationStatus);
+
+// 2. PATCH (Initial Upload - Fails if exists)
 router.patch('/verify/pan',        advocateUpload.single('panImage'),              uploadPan);
 router.patch('/verify/aadhar',     advocateUpload.single('aadharImage'),           uploadAadhar);
 router.patch('/verify/enrollment', advocateUpload.single('enrollmentCertificate'), uploadEnrollmentCertificate);
 router.patch('/verify/photo',      advocateUpload.single('photo'),                 uploadPhoto);
 router.patch('/verify/video',      advocateUpload.single('video'),                 uploadVideo);
+
+// 3. PUT (Edit / Replace - Fails if Verified)
+router.put('/verify/pan',        advocateUpload.single('panImage'),              editPan);
+router.put('/verify/aadhar',     advocateUpload.single('aadharImage'),           editAadhar);
+router.put('/verify/enrollment', advocateUpload.single('enrollmentCertificate'), editEnrollment);
+router.put('/verify/photo',      advocateUpload.single('photo'),                 editPhoto);
+router.put('/verify/video',      advocateUpload.single('video'),                 editVideo);
 
 // --- Availability Management ---
 router.post('/availability',        setAvailability);    // Set slots (with recurrence)

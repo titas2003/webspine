@@ -19,7 +19,7 @@ app.use(helmet());
 app.use(helmet.crossOriginResourcePolicy({ policy: "cross-origin" })); // Allow serving images from /uploads to frontend
 
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: ['http://localhost:3000', 'http://localhost:5173'],
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true
 }));
@@ -30,7 +30,7 @@ app.use(express.urlencoded({ extended: false }));
 app.get('/test', (req, res) => {
   res.send('🔥 Backend reachable');
 });
-app.use('/uploads', express.static(path.join(__dirname, 'uploads'))); 
+app.use('/uploads', express.static(path.join(__dirname, '..', 'uploads'))); 
 app.use('/api/user', userRoutes); 
 
 app.use('/api/advocate', advocateRoutes);
