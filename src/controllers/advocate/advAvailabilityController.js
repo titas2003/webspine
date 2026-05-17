@@ -21,7 +21,9 @@ const buildRecurrenceDates = (startDate, recurrenceEnd, recurrence) => {
 
   while (current <= end) {
     dates.push(new Date(current));
-    if (recurrence === 'weekly') {
+    if (recurrence === 'daily') {
+      current.setDate(current.getDate() + 1);
+    } else if (recurrence === 'weekly') {
       current.setDate(current.getDate() + 7);
     } else if (recurrence === 'monthly') {
       current.setMonth(current.getMonth() + 1);
@@ -36,7 +38,7 @@ const buildRecurrenceDates = (startDate, recurrenceEnd, recurrence) => {
 // @desc    Set Availability
 // @route   POST /api/advocate/availability
 // @body    { date, startTime, endTime, recurrence, recurrenceEnd }
-//          recurrence: 'none' | 'weekly' | 'monthly'
+//          recurrence: 'none' | 'daily' | 'weekly' | 'monthly'
 //          recurrenceEnd: required when recurrence !== 'none'
 // ---------------------------------------------------------------------------
 exports.setAvailability = async (req, res) => {

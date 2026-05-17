@@ -42,7 +42,7 @@ const availabilitySlotSchema = new mongoose.Schema({
    */
   recurrence: {
     type: String,
-    enum: ['none', 'weekly', 'monthly'],
+    enum: ['none', 'daily', 'weekly', 'monthly'],
     default: 'none'
   },
   recurrenceGroupId: {

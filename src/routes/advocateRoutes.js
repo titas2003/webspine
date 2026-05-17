@@ -40,6 +40,10 @@ const {
   listPastAppointments
 } = require('../controllers/advocate/advAvailabilityController');
 
+const {
+  getDashboardStats
+} = require('../controllers/advocate/advStatsController');
+
 // --- Middleware ---
 const { protectAdvocate } = require('../middleware/advocateAuthMiddleware');
 const { authLimiter } = require('../middleware/rateLimiter');
@@ -59,6 +63,9 @@ router.use(protectAdvocate);
 // --- Account ---
 router.post('/logout',  logout);
 router.get('/profile',  getProfile);
+
+// --- Dashboard Stats ---
+router.get('/stats',    getDashboardStats);
 
 // --- Fee Management ---
 router.get('/fees',     getFees);

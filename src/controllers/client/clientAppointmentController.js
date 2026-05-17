@@ -57,7 +57,7 @@ exports.getAdvocateSlots = async (req, res) => {
 // ---------------------------------------------------------------------------
 exports.requestBooking = async (req, res) => {
   try {
-    const { slotId, notes } = req.body;
+    const { slotId, notes, note } = req.body;
 
     if (!slotId) {
       return res.status(400).json({ success: false, message: 'slotId is required' });
@@ -78,7 +78,7 @@ exports.requestBooking = async (req, res) => {
       advocateId: slot.advocateId,
       slotId: slot._id,
       scheduledAt,
-      notes: notes || null,
+      notes: notes || note || null,
       status: 'pending'
     });
 
