@@ -29,6 +29,11 @@
             "date": 1778956621120,
             "name": "/Users/titasmajumder/workshop/maccloudprod/maccloudspine/logs/admin-2026-05-17.log",
             "hash": "f711364e3ae1476f4721560b88e3305c5f1f16c9382b995f86a468a7431ccb34"
+        },
+        {
+            "date": 1779113817595,
+            "name": "/Users/titasmajumder/workshop/maccloudprod/maccloudspine/logs/admin-2026-05-18.log",
+            "hash": "e020ba1e9e79c7d4136747cc98d820dea6c24e1fed1373503ebaedad76f89dc7"
         }
     ],
     "hashType": "sha256"

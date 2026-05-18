@@ -8,7 +8,7 @@ router.use(requestLogger(advocateLogger));
 
 // --- Controllers ---
 const {
-  signUp, login, logout, getProfile
+  signUp, login, logout, getProfile, updateProfile, updateProfilePhoto
 } = require('../controllers/advocate/advAuthController');
 
 const {
@@ -63,6 +63,8 @@ router.use(protectAdvocate);
 // --- Account ---
 router.post('/logout',  logout);
 router.get('/profile',  getProfile);
+router.patch('/profile', updateProfile);
+router.post('/profile/photo', advocateUpload.single('photo'), updateProfilePhoto);
 
 // --- Dashboard Stats ---
 router.get('/stats',    getDashboardStats);

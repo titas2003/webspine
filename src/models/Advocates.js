@@ -13,13 +13,18 @@ const advocateSchema = new mongoose.Schema({
   vUpdatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null },
 
   /**
-   * Experience & Fees
+   * Title, Experience & Fees
    */
+  title: { type: String, trim: true, default: 'Advocate' },
   yearsOfExperience: { type: Number, default: 0, min: 0 },
   feesPerSitting: { type: Number, default: 0, min: 0 },
   platformCharge: { type: Number, default: 0 },      // 10% total
   clientContribution: { type: Number, default: 0 },  // 4% surcharge
   advocateContribution: { type: Number, default: 0 },// 6% deduction
+  
+  rating: { type: Number, default: 4.8 }, // Defaulting to 4.8 for UI presentation
+  reviewsCount: { type: Number, default: 12 }, // Defaulting to 12 for UI presentation
+  themePreference: { type: String, default: 'default' },
 
   /**
    * Court Category & Specialization

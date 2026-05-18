@@ -3,6 +3,7 @@ const AdvocateCounter = require('../../models/AdvocateCounter');
 const AdvocateCategory = require('../../models/AdvocateCategory');
 const Blacklist = require('../../models/Blacklist');
 const jwt = require('jsonwebtoken');
+const fs = require('fs');
 const { sendWelcomeMail } = require('../../utils/mailer');
 const { findPolicyForExperience } = require('../admin/feePolicyController');
 
@@ -165,7 +166,8 @@ exports.login = async (req, res) => {
         token,
         data: {
           advId: advocate.advId,
-          name: advocate.name
+          name: advocate.name,
+          themePreference: advocate.themePreference || 'default'
         }
       });
     } else {
@@ -208,7 +210,9 @@ exports.logout = async (req, res) => {
  */
 exports.getProfile = async (req, res) => {
   try {
-    const advocate = await Advocate.findById(req.user.id);
+    const advocate = await Advocate.findById(req.user.id)
+      .populate('courtDivision', 'name _id')
+      .populate('specialization', 'name _id');
 
     if (!advocate) {
       return res.status(404).json({ success: false, message: 'Advocate not found' });
@@ -219,14 +223,115 @@ exports.getProfile = async (req, res) => {
       data: {
         advId: advocate.advId,
         name: advocate.name,
+        title: advocate.title,
         email: advocate.email,
         phone: advocate.phone,
         state: advocate.state,
+        address: advocate.address,
+        yearsOfExperience: advocate.yearsOfExperience,
+        courtDivision: advocate.courtDivision,
+        specialization: advocate.specialization,
+        rating: advocate.rating,
+        reviewsCount: advocate.reviewsCount,
+        themePreference: advocate.themePreference || 'default',
         vStatus: advocate.vStatus,
+        photo: advocate.photo || advocate.verificationDocs?.photo || null,
         createdAt: advocate.createdAt
       }
     });
   } catch (error) {
+    res.status(500).json({ success: false, message: error.message || 'Internal Server Error' });
+  }
+};
+
+/**
+ * @desc    Update Advocate Profile
+ * @route   PATCH /api/advocate/profile
+ * @access  Protected
+ */
+exports.updateProfile = async (req, res) => {
+  try {
+    const { 
+      name, 
+      title, 
+      email, 
+      phone, 
+      yearsOfExperience, 
+      address, 
+      courtDivision, 
+      specialization,
+      themePreference
+    } = req.body;
+
+    const advocate = await Advocate.findById(req.user.id);
+    if (!advocate) {
+      return res.status(404).json({ success: false, message: 'Advocate not found' });
+    }
+
+    if (name) advocate.name = name;
+    if (title !== undefined) advocate.title = title;
+    if (email) advocate.email = email;
+    if (phone) advocate.phone = phone;
+    if (yearsOfExperience !== undefined) advocate.yearsOfExperience = yearsOfExperience;
+    if (address !== undefined) advocate.address = address;
+    if (courtDivision) advocate.courtDivision = courtDivision;
+    if (specialization) advocate.specialization = specialization;
+    if (themePreference) advocate.themePreference = themePreference;
+
+    await advocate.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile updated successfully',
+      data: {
+        advId: advocate.advId,
+        name: advocate.name,
+        title: advocate.title
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message || 'Internal Server Error' });
+  }
+};
+
+/**
+ * @desc    Update Advocate Profile Picture
+ * @route   POST /api/advocate/profile/photo
+ * @access  Protected
+ */
+exports.updateProfilePhoto = async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({ success: false, message: 'Please upload an image file' });
+    }
+
+    const advocate = await Advocate.findById(req.user.id);
+    if (!advocate) {
+      fs.unlinkSync(req.file.path);
+      return res.status(404).json({ success: false, message: 'Advocate not found' });
+    }
+
+    // Unlink old photo if exists
+    if (advocate.photo && fs.existsSync(advocate.photo)) {
+      try {
+        fs.unlinkSync(advocate.photo);
+      } catch (err) {
+        console.error('Failed to delete old photo:', err);
+      }
+    }
+
+    advocate.photo = req.file.path;
+    await advocate.save();
+
+    res.status(200).json({
+      success: true,
+      message: 'Profile picture updated successfully',
+      data: {
+        photo: advocate.photo
+      }
+    });
+  } catch (error) {
+    if (req.file) fs.unlinkSync(req.file.path);
     res.status(500).json({ success: false, message: error.message || 'Internal Server Error' });
   }
 };
