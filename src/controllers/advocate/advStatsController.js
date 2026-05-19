@@ -24,11 +24,10 @@ exports.getDashboardStats = async (req, res) => {
       Appointment.countDocuments({ advocateId, status: 'rejected' }),
       Appointment.countDocuments({ advocateId, status: { $in: ['accepted', 'completed'] } }), // Active/Past
       Appointment.countDocuments({ advocateId, status: 'completed' }),
-      Advocate.findById(advocateId).select('feesPerSitting')
+      Advocate.findById(advocateId).select('feesPerSitting totalEarnings')
     ]);
 
-    const feesPerSitting = advocate?.feesPerSitting || 0;
-    const totalEarnings = completedCount * feesPerSitting;
+    const totalEarnings = advocate?.totalEarnings || 0;
 
     res.status(200).json({
       success: true,

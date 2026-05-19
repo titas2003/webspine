@@ -25,6 +25,7 @@ const advocateSchema = new mongoose.Schema({
   rating: { type: Number, default: 4.8 }, // Defaulting to 4.8 for UI presentation
   reviewsCount: { type: Number, default: 12 }, // Defaulting to 12 for UI presentation
   themePreference: { type: String, default: 'default' },
+  totalEarnings: { type: Number, default: 0 },
 
   /**
    * Court Category & Specialization

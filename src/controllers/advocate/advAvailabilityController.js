@@ -202,6 +202,16 @@ exports.respondToBooking = async (req, res) => {
 
     if (action === 'accept') {
       appointment.status = 'accepted';
+      
+      // Fetch advocate to snapshot current fees
+      const advocate = await require('../../models/Advocates').findById(req.user._id);
+      if (advocate) {
+        appointment.feesSnapshot = {
+          feesPerSitting: advocate.feesPerSitting || 0,
+          platformCharge: advocate.platformCharge || 0,
+          advocateEarnings: (advocate.feesPerSitting || 0) - (advocate.advocateContribution || 0)
+        };
+      }
     } else {
       appointment.status = 'rejected';
       appointment.rejectionReason = rejectionReason || null;
@@ -321,6 +331,72 @@ exports.listPastAppointments = async (req, res) => {
       .sort({ scheduledAt: -1 });
 
     res.status(200).json({ success: true, count: appointments.length, data: appointments });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ---------------------------------------------------------------------------
+// @desc    Mark Appointment as Completed & Log Transaction
+// @route   PATCH /api/advocate/appointments/:id/complete
+// ---------------------------------------------------------------------------
+exports.completeAppointment = async (req, res) => {
+  try {
+    const appointment = await Appointment.findOne({ _id: req.params.id, advocateId: req.user._id });
+    if (!appointment) return res.status(404).json({ success: false, message: 'Appointment not found' });
+
+    if (appointment.status !== 'accepted') {
+      return res.status(400).json({ success: false, message: 'Only accepted appointments can be marked as completed' });
+    }
+
+    // Update appointment status
+    appointment.status = 'completed';
+    await appointment.save();
+
+    // Generate Transaction Ledger
+    const Transaction = require('../../models/Transaction');
+    const Advocate = require('../../models/Advocates');
+
+    // Use fee snapshot if it exists, otherwise fallback to current advocate fees
+    let amountPaid = 0, platformFee = 0, advocateEarnings = 0;
+
+    if (appointment.feesSnapshot && appointment.feesSnapshot.feesPerSitting !== null) {
+      amountPaid = appointment.feesSnapshot.feesPerSitting;
+      platformFee = appointment.feesSnapshot.platformCharge;
+      advocateEarnings = appointment.feesSnapshot.advocateEarnings;
+    } else {
+      const advocate = await Advocate.findById(req.user._id);
+      if (advocate) {
+        amountPaid = advocate.feesPerSitting || 0;
+        platformFee = advocate.platformCharge || 0;
+        advocateEarnings = (advocate.feesPerSitting || 0) - (advocate.advocateContribution || 0);
+      }
+    }
+
+    const transaction = await Transaction.create({
+      appointmentId: appointment._id,
+      advocateId: appointment.advocateId,
+      clientId: appointment.clientId,
+      amountPaidByClient: amountPaid,
+      platformFeeCollected: platformFee,
+      advocateEarnings: advocateEarnings,
+      status: 'success'
+    });
+
+    // Increment advocate's total earnings
+    await Advocate.findByIdAndUpdate(req.user._id, {
+      $inc: { totalEarnings: advocateEarnings }
+    });
+
+    res.status(200).json({
+      success: true,
+      message: 'Appointment completed and transaction logged successfully',
+      data: {
+        appointment,
+        transaction
+      }
+    });
+
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });
   }

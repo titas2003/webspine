@@ -65,6 +65,14 @@ const appointmentSchema = new mongoose.Schema({
     type: String,
     trim: true,
     default: null
+  },
+  /**
+   * Financial Snapshot — captured upon acceptance
+   */
+  feesSnapshot: {
+    feesPerSitting: { type: Number, default: null },
+    platformCharge: { type: Number, default: null },
+    advocateEarnings: { type: Number, default: null }
   }
 }, {
   timestamps: true,

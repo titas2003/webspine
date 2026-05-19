@@ -25,3 +25,35 @@ exports.dropAllSessions = async (req, res) => {
     });
   }
 };
+
+/**
+ * @desc    Get total platform financial stats
+ * @route   GET /api/admin/system/financials
+ * @access  Protected (Admin only)
+ */
+exports.getFinancialStats = async (req, res) => {
+  try {
+    const Transaction = require('../../models/Transaction');
+
+    const stats = await Transaction.aggregate([
+      { $match: { status: 'success' } },
+      { 
+        $group: { 
+          _id: null, 
+          totalPlatformFees: { $sum: '$platformFeeCollected' },
+          totalAdvocateEarnings: { $sum: '$advocateEarnings' },
+          totalVolume: { $sum: '$amountPaidByClient' }
+        } 
+      }
+    ]);
+
+    const data = stats.length > 0 ? stats[0] : { totalPlatformFees: 0, totalAdvocateEarnings: 0, totalVolume: 0 };
+
+    res.status(200).json({
+      success: true,
+      data
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};

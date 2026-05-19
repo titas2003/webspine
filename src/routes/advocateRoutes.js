@@ -37,7 +37,8 @@ const {
   respondToBooking,
   scheduleMeeting,
   listUpcomingAppointments,
-  listPastAppointments
+  listPastAppointments,
+  completeAppointment
 } = require('../controllers/advocate/advAvailabilityController');
 
 const {
@@ -106,5 +107,6 @@ router.get('/appointments/upcoming',           listUpcomingAppointments);// Upco
 router.get('/appointments/past',               listPastAppointments);    // Historical
 router.patch('/appointments/:id/respond',      respondToBooking);        // Accept / Reject
 router.patch('/appointments/:id/schedule',     scheduleMeeting);         // Add meeting details
+router.patch('/appointments/:id/complete',     completeAppointment);     // Mark as completed
 
 module.exports = router;

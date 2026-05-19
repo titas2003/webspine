@@ -87,8 +87,9 @@ router.get('/advocates/:advId',          getAdvocateDetails);   // View full adv
 router.patch('/advocates/:advId/verify', verifyAdvocate);       // Verify or Reject
 
 // --- System Management ---
-const { dropAllSessions } = require('../controllers/admin/systemController');
+const { dropAllSessions, getFinancialStats } = require('../controllers/admin/systemController');
 router.post('/system/drop-all-sessions', dropAllSessions);
+router.get('/system/financials', getFinancialStats);
 
 module.exports = router;
 
