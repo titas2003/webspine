@@ -1,4 +1,7 @@
 const Blacklist = require('../../models/Blacklist');
+const User = require('../../models/User');
+const Advocates = require('../../models/Advocates');
+const { sendAdminBulkNotification } = require('../../utils/mailer');
 
 /**
  * @desc    Drop all active sessions platform-wide
@@ -7,15 +10,43 @@ const Blacklist = require('../../models/Blacklist');
  */
 exports.dropAllSessions = async (req, res) => {
   try {
-    // Create a GLOBAL_LOGOUT record in the blacklist
+    // 1. Create a GLOBAL_LOGOUT record in the blacklist
     // Middlewares check JWT iat against this record's createdAt
     await Blacklist.create({
       token: 'GLOBAL_LOGOUT'
     });
 
+    // 2. Gather all user emails (clients + advocates) to notify — fire and forget
+    const [clients, advocates] = await Promise.all([
+      User.find().select('email'),
+      Advocates.find().select('email')
+    ]);
+
+    const allEmails = [
+      ...clients.map(c => c.email),
+      ...advocates.map(a => a.email)
+    ].filter(Boolean);
+
+    if (allEmails.length > 0) {
+      // Fire-and-forget — don't await, so the API responds immediately
+      sendAdminBulkNotification(
+        allEmails,
+        'Scheduled Maintenance — Session Reset',
+        `<p>Dear MacclouSpine User,</p>
+        <p>We sincerely apologise for the inconvenience.</p>
+        <p>
+          All active sessions, including yours, have been <strong>dropped intentionally</strong> 
+          by MacclouSpine due to a scheduled <strong>maintenance activity</strong>.
+        </p>
+        <p>Please log in again to continue using the platform. We appreciate your patience and understanding.</p>
+        <br/>
+        <p>Warm regards,<br/><strong>MacclouSpine Team</strong></p>`
+      );
+    }
+
     res.status(200).json({
       success: true,
-      message: 'All active sessions have been invalidated successfully.'
+      message: `All active sessions have been invalidated. Maintenance notification sent to ${allEmails.length} registered users.`
     });
   } catch (error) {
     console.error('Error dropping all sessions:', error.message);
