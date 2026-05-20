@@ -91,5 +91,41 @@ const { dropAllSessions, getFinancialStats } = require('../controllers/admin/sys
 router.post('/system/drop-all-sessions', dropAllSessions);
 router.get('/system/financials', getFinancialStats);
 
+// =============================================================================
+// NEW API ENDPOINTS (Platform Management)
+// =============================================================================
+
+// --- Client Visibility & Alteration ---
+const { getAllClients, getClientById, updateClient } = require('../controllers/admin/adminClientController');
+router.get('/clients', getAllClients);
+router.get('/clients/:id', getClientById);
+router.patch('/clients/:id', updateClient);
+
+// --- Advocate Visibility & Alteration ---
+const { getAllAdvocates, updateAdvocate } = require('../controllers/admin/adminAdvocateController');
+router.get('/advocates', getAllAdvocates);
+router.patch('/advocates/:advId/update', updateAdvocate); // '/advocates/:advId/verify' is used by VerificationController
+
+// --- Appointment Visibility & Alteration ---
+const { getAllAppointments, getAppointmentById, updateAppointmentStatus } = require('../controllers/admin/adminAppointmentController');
+router.get('/appointments', getAllAppointments);
+router.get('/appointments/:id', getAppointmentById);
+router.patch('/appointments/:id/status', updateAppointmentStatus);
+
+// --- Financial Transactions ---
+const { getAllTransactions } = require('../controllers/admin/adminFinancialController');
+router.get('/financials/transactions', getAllTransactions);
+
+// --- Activity Logs (File-based, per role) ---
+const { getAdvocateLogs, getClientLogs, getAdminLogs } = require('../controllers/admin/adminActivityController');
+router.get('/activity/advocate', getAdvocateLogs);
+router.get('/activity/client', getClientLogs);
+router.get('/activity/admin', getAdminLogs);
+
+// --- Bulk Notifications ---
+const { sendBulkMailToAdvocates, sendBulkMailToClients } = require('../controllers/admin/adminNotificationController');
+router.post('/notifications/advocates', sendBulkMailToAdvocates);
+router.post('/notifications/clients', sendBulkMailToClients);
+
 module.exports = router;
 

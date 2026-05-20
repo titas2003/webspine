@@ -7,6 +7,7 @@ const ClientAuthService = require('../../services/clientAuthService');
 exports.signUp = async (req, res) => {
   try {
     const result = await ClientAuthService.signUpClient(req.body);
+
     res.status(201).json({
       success: true,
       ...result // Spreads token and data/user
@@ -25,6 +26,7 @@ exports.login = async (req, res) => {
   try {
     const { identifier, password } = req.body;
     const result = await ClientAuthService.loginClient(identifier, password);
+
     res.status(200).json({
       success: true,
       ...result

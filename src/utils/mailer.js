@@ -28,6 +28,32 @@ const sendMail = async ({ to, subject, html }) => {
   }
 };
 
+/**
+ * @desc  Bulk send helper — batched or BCC safely
+ */
+const sendBulkMail = async ({ toArray, subject, html }) => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.MAILID,
+        pass: process.env.MAILKEY
+      }
+    });
+
+    // We use BCC to hide recipients from each other
+    await transporter.sendMail({
+      from: `"MacclouSpine" <${process.env.MAILID}>`,
+      to: process.env.MAILID, // Send to self
+      bcc: toArray,           // BCC all recipients
+      subject,
+      html
+    });
+  } catch (err) {
+    console.error(`[Mailer] Failed to send bulk mail:`, err.message);
+  }
+};
+
 // ---------------------------------------------------------------------------
 // TEMPLATES
 // ---------------------------------------------------------------------------
@@ -286,6 +312,24 @@ exports.sendFeeViolationSummaryAdminMail = (to, name, violationCount, violations
       ` : '<p>No violations were found. All advocates are compliant with current policies.</p>'}
       <br/>
       <p style="color:#888;font-size:12px">MacclouSpine System Audit</p>
+    `
+  });
+};
+
+/**
+ * @desc  Admin bulk notification to users (advocates or clients)
+ */
+exports.sendAdminBulkNotification = (toArray, subject, bodyHtml) => {
+  return sendBulkMail({
+    toArray,
+    subject: `📢 Notification from MacclouSpine: ${subject}`,
+    html: `
+      <h2>Hello from MacclouSpine,</h2>
+      <div style="margin-top:16px; padding:16px; background:#f9fafb; border-left:4px solid #1a2b4b; font-size:14px; line-height:1.6; color:#374151;">
+        ${bodyHtml}
+      </div>
+      <br/>
+      <p style="color:#888;font-size:12px">MacclouSpine Administration</p>
     `
   });
 };

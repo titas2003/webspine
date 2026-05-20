@@ -113,5 +113,6 @@ advocateSchema.pre('save', async function() {
 advocateSchema.methods.matchPassword = async function(enteredPassword) {
   return await bcrypt.compare(enteredPassword, this.password);
 };
-
 module.exports = mongoose.model('Advocate', advocateSchema);
+// Temporary alias to prevent crashes from existing ActivityLog documents with userModel='Advocates'
+mongoose.model('Advocates', advocateSchema);
