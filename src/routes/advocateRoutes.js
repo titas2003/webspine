@@ -45,10 +45,22 @@ const {
   getDashboardStats
 } = require('../controllers/advocate/advStatsController');
 
+const {
+  listDocuments,
+  uploadDocument,
+  saveNote,
+  getDocument,
+  downloadDocument,
+  deleteDocument,
+  getMyClients,
+  getMyAppointments
+} = require('../controllers/advocate/advDocumentController');
+
 // --- Middleware ---
 const { protectAdvocate } = require('../middleware/advocateAuthMiddleware');
 const { authLimiter } = require('../middleware/rateLimiter');
 const advocateUpload = require('../utils/advocateMulterConfig');
+const documentUpload = require('../utils/documentMulterConfig');
 
 // =============================================================================
 // PUBLIC ROUTES
@@ -108,5 +120,15 @@ router.get('/appointments/past',               listPastAppointments);    // Hist
 router.patch('/appointments/:id/respond',      respondToBooking);        // Accept / Reject
 router.patch('/appointments/:id/schedule',     scheduleMeeting);         // Add meeting details
 router.patch('/appointments/:id/complete',     completeAppointment);     // Mark as completed
+
+// --- Document Center ---
+router.get('/documents/clients',               getMyClients);            // Clients for Client Docs folder
+router.get('/documents/appointments',          getMyAppointments);       // Appointments for dropdown
+router.get('/documents',                       listDocuments);
+router.get('/documents/:id',                   getDocument);
+router.get('/documents/:id/download',          downloadDocument);
+router.post('/documents/upload',               documentUpload.single('file'), uploadDocument);
+router.post('/documents/note',                 saveNote);
+router.delete('/documents/:id',                deleteDocument);
 
 module.exports = router;
