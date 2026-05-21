@@ -68,18 +68,20 @@ const userSchema = new mongoose.Schema({
    * Stores URLs to Cloudinary, S3, or local storage paths
    */
   verificationDocs: {
-    aadharImage: { 
-      type: String, 
-      default: null 
-    },
-    panImage: { 
-      type: String, 
-      default: null 
-    },
-    videoUrl: { 
-      type: String, 
-      default: null 
-    }
+    aadharImage: { type: String, default: null },
+    panImage:    { type: String, default: null },
+    videoUrl:    { type: String, default: null }
+  },
+  /**
+   * Per-document verification status set by advocate
+   * pending  → not yet reviewed
+   * verified → advocate accepted this doc
+   * rejected → advocate rejected this doc
+   */
+  docVerification: {
+    aadhar: { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' },
+    pan:    { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' },
+    video:  { type: String, enum: ['pending', 'verified', 'rejected'], default: 'pending' }
   }
 }, { 
   timestamps: true,

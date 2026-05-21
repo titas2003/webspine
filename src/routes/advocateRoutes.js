@@ -56,6 +56,13 @@ const {
   getMyAppointments
 } = require('../controllers/advocate/advDocumentController');
 
+const {
+  getAdvocateClients,
+  updateClientVStatus,
+  notifyClientForReview,
+  verifyClientDoc
+} = require('../controllers/advocate/advClientVerifyController');
+
 // --- Middleware ---
 const { protectAdvocate } = require('../middleware/advocateAuthMiddleware');
 const { authLimiter } = require('../middleware/rateLimiter');
@@ -130,5 +137,11 @@ router.get('/documents/:id/download',          downloadDocument);
 router.post('/documents/upload',               documentUpload.single('file'), uploadDocument);
 router.post('/documents/note',                 saveNote);
 router.delete('/documents/:id',                deleteDocument);
+
+// --- Client Verification Center ---
+router.get('/clients',                                getAdvocateClients);    // All appointment clients + KYC status
+router.patch('/clients/:clientId/verify',             updateClientVStatus);   // Verify or reject entire client
+router.patch('/clients/:clientId/verify-doc',         verifyClientDoc);       // Mark individual doc verified/rejected
+router.post('/clients/:clientId/notify',              notifyClientForReview); // Send doc-review notification
 
 module.exports = router;
