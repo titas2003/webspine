@@ -19,7 +19,7 @@ exports.getAllAppointments = async (req, res) => {
     const total = await Appointment.countDocuments(query);
     const appointments = await Appointment.find(query)
       .populate('clientId', 'name email phone')
-      .populate('advId', 'name email phone advId')
+      .populate('advocateId', 'name email phone advId')
       .sort({ createdAt: -1 })
       .skip(startIndex)
       .limit(limit);
@@ -48,7 +48,7 @@ exports.getAppointmentById = async (req, res) => {
   try {
     const appointment = await Appointment.findById(req.params.id)
       .populate('clientId', 'name email phone state')
-      .populate('advId', 'name email phone advId specialization courtDivision');
+      .populate('advocateId', 'name email phone advId specialization courtDivision');
       
     if (!appointment) {
       return res.status(404).json({ success: false, message: 'Appointment not found' });

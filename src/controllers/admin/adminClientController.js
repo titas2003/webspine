@@ -19,8 +19,13 @@ exports.getAllClients = async (req, res) => {
       query.$or = [
         { name: { $regex: req.query.search, $options: 'i' } },
         { email: { $regex: req.query.search, $options: 'i' } },
-        { phone: { $regex: req.query.search, $options: 'i' } }
+        { phone: { $regex: req.query.search, $options: 'i' } },
+        { clientId: { $regex: req.query.search, $options: 'i' } }
       ];
+    }
+
+    if (req.query.status) {
+      query.vStatus = req.query.status;
     }
 
     const total = await User.countDocuments(query);
@@ -60,7 +65,7 @@ exports.getClientById = async (req, res) => {
 
     // Fetch appointment history
     const appointments = await Appointment.find({ clientId: client._id })
-      .populate('advId', 'name email phone specialization')
+      .populate('advocateId', 'name email phone specialization')
       .sort({ createdAt: -1 })
       .limit(20);
 

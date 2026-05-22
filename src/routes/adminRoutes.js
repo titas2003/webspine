@@ -88,8 +88,11 @@ router.patch('/advocates/:advId/verify', verifyAdvocate);       // Verify or Rej
 
 // --- System Management ---
 const { dropAllSessions, getFinancialStats } = require('../controllers/admin/systemController');
+const { getSystemHealth } = require('../controllers/admin/adminHealthController');
+
 router.post('/system/drop-all-sessions', dropAllSessions);
 router.get('/system/financials', getFinancialStats);
+router.get('/system/health', getSystemHealth);
 
 // =============================================================================
 // NEW API ENDPOINTS (Platform Management)

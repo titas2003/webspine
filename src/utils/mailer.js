@@ -334,4 +334,21 @@ exports.sendAdminBulkNotification = (toArray, subject, bodyHtml) => {
   });
 };
 
-
+/**
+ * @desc  Verify nodemailer transporter configuration
+ */
+exports.verifyMailer = async () => {
+  try {
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: process.env.MAILID,
+        pass: process.env.MAILKEY
+      }
+    });
+    const success = await transporter.verify();
+    return { success, email: process.env.MAILID };
+  } catch (err) {
+    return { success: false, error: err.message };
+  }
+};
