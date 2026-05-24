@@ -137,7 +137,7 @@ exports.listUpcomingBookings = async (req, res) => {
   try {
     const appointments = await Appointment.find({
       clientId: req.user._id,
-      status: 'accepted',
+      status: { $in: ['accepted', 'pending', 'awaiting_payment'] },
       scheduledAt: { $gte: new Date() }
     })
       .populate('advocateId', 'advId name email state')
@@ -158,7 +158,10 @@ exports.listPastAppointments = async (req, res) => {
   try {
     const appointments = await Appointment.find({
       clientId: req.user._id,
-      scheduledAt: { $lt: new Date() }
+      $or: [
+        { status: { $in: ['completed', 'cancelled', 'rejected'] } },
+        { scheduledAt: { $lt: new Date() } }
+      ]
     })
       .populate('advocateId', 'advId name email state')
       .populate('slotId', 'date startTime endTime')
