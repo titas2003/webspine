@@ -201,7 +201,7 @@ exports.respondToBooking = async (req, res) => {
     }
 
     if (action === 'accept') {
-      appointment.status = 'accepted';
+      appointment.status = 'awaiting_payment';
       
       // Fetch advocate to snapshot current fees
       const advocate = await require('../../models/Advocates').findById(req.user._id);
@@ -269,8 +269,8 @@ exports.scheduleMeeting = async (req, res) => {
     const appointment = await Appointment.findOne({ _id: req.params.id, advocateId: req.user._id });
     if (!appointment) return res.status(404).json({ success: false, message: 'Appointment not found' });
 
-    if (appointment.status !== 'accepted') {
-      return res.status(400).json({ success: false, message: 'Can only schedule meetings for accepted appointments' });
+    if (appointment.status !== 'accepted' && appointment.status !== 'awaiting_payment') {
+      return res.status(400).json({ success: false, message: 'Can only schedule meetings for accepted or awaiting_payment appointments' });
     }
 
     appointment.meetingType = meetingType;
@@ -278,15 +278,18 @@ exports.scheduleMeeting = async (req, res) => {
     appointment.meetingAddress = meetingAddress || null;
     await appointment.save();
 
-    // Notify client of meeting details
-    const slot = await AvailabilitySlot.findById(appointment.slotId).select('date startTime endTime');
-    const client = await User.findById(appointment.clientId).select('name email');
-    if (client && slot) {
-      sendMeetingScheduledMail(
-        client.email, client.name,
-        meetingType, slot.date, slot.startTime, slot.endTime,
-        meetingLink || null, meetingAddress || null
-      );
+    // Notify client of meeting details only if already accepted. 
+    // If awaiting_payment, the webhook will send the mail after payment.
+    if (appointment.status === 'accepted') {
+      const slot = await AvailabilitySlot.findById(appointment.slotId).select('date startTime endTime');
+      const client = await User.findById(appointment.clientId).select('name email');
+      if (client && slot) {
+        sendMeetingScheduledMail(
+          client.email, client.name,
+          meetingType, slot.date, slot.startTime, slot.endTime,
+          meetingLink || null, meetingAddress || null
+        );
+      }
     }
 
     res.status(200).json({ success: true, message: 'Meeting details saved', data: appointment });

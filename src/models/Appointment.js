@@ -31,7 +31,7 @@ const appointmentSchema = new mongoose.Schema({
   },
   status: {
     type: String,
-    enum: ['pending', 'accepted', 'rejected', 'cancelled', 'completed'],
+    enum: ['pending', 'awaiting_payment', 'accepted', 'rejected', 'cancelled', 'completed'],
     default: 'pending',
     index: true
   },
@@ -73,6 +73,13 @@ const appointmentSchema = new mongoose.Schema({
     feesPerSitting: { type: Number, default: null },
     platformCharge: { type: Number, default: null },
     advocateEarnings: { type: Number, default: null }
+  },
+  /**
+   * Stripe Payment integration
+   */
+  stripeSessionId: {
+    type: String,
+    default: null
   }
 }, {
   timestamps: true,

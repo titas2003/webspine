@@ -48,6 +48,9 @@ const {
 // 5. Import Advocate Search Controller
 const { searchAdvocates } = require('../controllers/client/advocateSearchController');
 
+// 6. Import Payment Controller
+const { createCheckoutSession } = require('../controllers/paymentController');
+
 // --- PUBLIC ROUTES ---
 router.post('/signup', authLimiter, signUp);
 router.post('/login', authLimiter, login);
@@ -89,5 +92,10 @@ router.get('/appointments/upcoming',       listUpcomingBookings);   // My upcomi
 router.get('/appointments/past',           listPastAppointments);   // My past appointments
 router.get('/appointments/:id',            getBookingStatus);       // Single booking status
 router.patch('/appointments/:id/cancel',   cancelBooking);          // Cancel a booking
+
+// =============================================================================
+// PAYMENT ROUTES
+// =============================================================================
+router.post('/payments/checkout/:appointmentId', createCheckoutSession);
 
 module.exports = router;

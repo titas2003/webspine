@@ -2,6 +2,9 @@ const express = require('express');
 const cors = require('cors');
 const helmet = require('helmet');
 const dotenv = require('dotenv');
+
+dotenv.config();
+
 const connectDB = require('./config/db');
 const advocateRoutes = require('./routes/advocateRoutes');
 const userRoutes = require('./routes/clientRoutes');
@@ -9,8 +12,8 @@ const adminRoutes = require('./routes/adminRoutes');
 const commonRoutes = require('./routes/commonRoutes');
 const path = require('path');
 
-dotenv.config();
 connectDB();
+require('./utils/cronJobs'); // Initialize cron jobs
 
 const app = express();
 
@@ -23,6 +26,10 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH'],
   credentials: true
 }));
+
+// Stripe Webhook needs raw body, not JSON
+const paymentController = require('./controllers/paymentController');
+app.post('/api/webhooks/stripe', express.raw({ type: 'application/json' }), paymentController.stripeWebhook);
 
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
