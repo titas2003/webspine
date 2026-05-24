@@ -337,6 +337,46 @@ exports.listPastAppointments = async (req, res) => {
 };
 
 // ---------------------------------------------------------------------------
+// @desc    List All Appointments
+// @route   GET /api/advocate/appointments/all
+// ---------------------------------------------------------------------------
+exports.listAllAppointments = async (req, res) => {
+  try {
+    const page = parseInt(req.query.page, 10) || 1;
+    const limit = parseInt(req.query.limit, 10) || 10;
+    const startIndex = (page - 1) * limit;
+
+    const query = { advocateId: req.user._id };
+    
+    if (req.query.status && req.query.status !== 'All') {
+      query.status = req.query.status.toLowerCase();
+    }
+
+    const appointments = await Appointment.find(query)
+      .populate('clientId', 'name email phone clientId')
+      .populate('slotId', 'date startTime endTime')
+      .sort({ createdAt: -1 })
+      .skip(startIndex)
+      .limit(limit);
+
+    const total = await Appointment.countDocuments(query);
+
+    res.status(200).json({ 
+      success: true, 
+      count: appointments.length, 
+      data: appointments,
+      pagination: {
+        total,
+        page,
+        pages: Math.ceil(total / limit)
+      }
+    });
+  } catch (error) {
+    res.status(500).json({ success: false, message: error.message });
+  }
+};
+
+// ---------------------------------------------------------------------------
 // @desc    Mark Appointment as Completed & Log Transaction
 // @route   PATCH /api/advocate/appointments/:id/complete
 // ---------------------------------------------------------------------------

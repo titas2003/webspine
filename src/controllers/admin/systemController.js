@@ -65,7 +65,10 @@ exports.dropAllSessions = async (req, res) => {
 exports.getFinancialStats = async (req, res) => {
   try {
     const Transaction = require('../../models/Transaction');
+    const Appointment = require('../../models/Appointment');
+    const User = require('../../models/User');
 
+    // 1. Overall Financials
     const stats = await Transaction.aggregate([
       { $match: { status: 'success' } },
       { 
@@ -77,12 +80,56 @@ exports.getFinancialStats = async (req, res) => {
         } 
       }
     ]);
+    const financials = stats.length > 0 ? stats[0] : { totalPlatformFees: 0, totalAdvocateEarnings: 0, totalVolume: 0 };
 
-    const data = stats.length > 0 ? stats[0] : { totalPlatformFees: 0, totalAdvocateEarnings: 0, totalVolume: 0 };
+    // 2. Monthly Revenue Trends (last 6 months)
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 6);
+    const monthlyTrendsRaw = await Transaction.aggregate([
+      { $match: { status: 'success', createdAt: { $gte: sixMonthsAgo } } },
+      {
+        $group: {
+          _id: { month: { $month: '$createdAt' }, year: { $year: '$createdAt' } },
+          revenue: { $sum: '$platformFeeCollected' },
+          volume: { $sum: '$amountPaidByClient' }
+        }
+      },
+      { $sort: { '_id.year': 1, '_id.month': 1 } }
+    ]);
+    // Format monthly trends
+    const monthNames = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const revenueTrends = monthlyTrendsRaw.map(t => ({
+      label: `${monthNames[t._id.month - 1]} ${t._id.year}`,
+      revenue: t.revenue,
+      volume: t.volume
+    }));
+
+    // 3. Location Trends (Clients by State/Address)
+    const locationTrends = await User.aggregate([
+      {
+        $project: {
+          loc: { $ifNull: ['$state', { $ifNull: ['$location.address', 'Unspecified'] }] }
+        }
+      },
+      { $group: { _id: '$loc', count: { $sum: 1 } } },
+      { $sort: { count: -1 } },
+      { $limit: 6 }
+    ]);
+
+    // 4. Appointment Status Trends
+    const appointmentTrends = await Appointment.aggregate([
+      { $group: { _id: '$status', count: { $sum: 1 } } },
+      { $sort: { count: -1 } }
+    ]);
 
     res.status(200).json({
       success: true,
-      data
+      data: {
+        ...financials,
+        revenueTrends,
+        locationTrends: locationTrends.map(l => ({ location: l._id, count: l.count })),
+        appointmentTrends: appointmentTrends.map(a => ({ status: a._id, count: a.count }))
+      }
     });
   } catch (error) {
     res.status(500).json({ success: false, message: error.message });

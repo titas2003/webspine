@@ -38,6 +38,7 @@ const {
   scheduleMeeting,
   listUpcomingAppointments,
   listPastAppointments,
+  listAllAppointments,
   completeAppointment
 } = require('../controllers/advocate/advAvailabilityController');
 
@@ -124,6 +125,7 @@ router.delete('/availability/:id',  deleteSlot);         // Remove a slot
 router.get('/appointments/requests',           listBookingRequests);     // View pending requests
 router.get('/appointments/upcoming',           listUpcomingAppointments);// Upcoming accepted
 router.get('/appointments/past',               listPastAppointments);    // Historical
+router.get('/appointments/all',                listAllAppointments);     // All appointments
 router.patch('/appointments/:id/respond',      respondToBooking);        // Accept / Reject
 router.patch('/appointments/:id/schedule',     scheduleMeeting);         // Add meeting details
 router.patch('/appointments/:id/complete',     completeAppointment);     // Mark as completed
